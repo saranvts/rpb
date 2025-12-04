@@ -25,12 +25,12 @@ public class AuthenticationController
 	@Value("${passwordChange}")
 	String passwordChange;
 	
-	   @RequestMapping(value = {"/"}, method = RequestMethod.GET)
+	   @RequestMapping(value = {"/", "/login"}, method = RequestMethod.GET)
 	    public String rpbFundApproval(HttpServletRequest req,HttpSession ses) throws Exception 
 	    {
-	    	return "redirect:/RpbFundApprovalAuthenticate";
+	    	return "redirect:/oauth2/authorization/custom";
 	    }
-	   
+
 	   @RequestMapping(value = "getModuleId.htm", method = RequestMethod.GET)
 		public @ResponseBody void getModuleId(HttpServletRequest req, HttpSession ses) throws Exception {
 			
