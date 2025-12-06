@@ -225,14 +225,6 @@ public class FundApprovalController
 				
 			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,loginType,formRole);
 			List<Object[]> approvedList= fundApprovalService.getFundApprovedList(empId,finYear,loginType);
-			if(approvalPendingList!=null && approvalPendingList.size() > 0)
-			{
-				approvalPendingList.forEach(row->System.out.println("approvalPendingList---"+Arrays.toString(row)));
-			}
-			if(approvedList!=null && approvedList.size() > 0)
-			{
-				approvedList.forEach(row->System.out.println("approvedList*****"+Arrays.toString(row)));
-			}
 			
 			req.setAttribute("ApprovalPendingList",approvalPendingList);
 			req.setAttribute("ApprovalList",approvedList);
@@ -286,7 +278,7 @@ public class FundApprovalController
 		   			   backDto.setEstimatedTypeBackBtn(particularFundDetails[1]!=null ? particularFundDetails[1].toString() : "");
 		   			   backDto.setDivisionId(particularFundDetails[11]!=null ? particularFundDetails[11].toString() : "");
 		   			   
-		   			   if(backDto.getEstimatedTypeBackBtn()!=null) 
+		   			   if(backDto.getEstimatedTypeBackBtn()!=null)
 		   			   {
 		   				   if(backDto.getEstimatedTypeBackBtn().equalsIgnoreCase("R")) 
 		   				   {
@@ -400,8 +392,6 @@ public class FundApprovalController
 		String action=req.getParameter("Action");
 		String remarks=req.getParameter("remarks");
 		String memberStatus=req.getParameter("memberStatus");
-		
-		System.out.println("action****"+action);
 		
 		try
 		{
@@ -535,9 +525,6 @@ public class FundApprovalController
 			String[] reccEmpId=req.getParameterValues("EditReccEmpId");
 			String[] skippedStatus=req.getParameterValues("SkipReccEmpStatus");
 			String[] reasonType=req.getParameterValues("ReasonType");
-			
-			System.out.println("skippedStatus*******"+Arrays.toString(skippedStatus));
-			System.out.println("reasonType*******"+Arrays.toString(reasonType));
 			
 			if(fundApprovalId == null)
 			{
@@ -718,7 +705,6 @@ public class FundApprovalController
 				{
 					if(demandItemOrderDetails[i]!=null)
 					{
-						System.out.println("demandItemOrderDetails[i]*****"+demandItemOrderDetails[i]);
 						String serialNo=demandItemOrderDetails[i];
 						
 						String[] commitPayIds=req.getParameterValues("CommitmentPayId-"+serialNo);
@@ -729,11 +715,9 @@ public class FundApprovalController
 						}
 						
 						String[] demandIds=req.getParameterValues("BookingId-"+serialNo);
-						System.out.println("demandIds******"+demandIds);
 						if(demandIds!=null && demandIds.length>0)
 						{
 							String demandDetails = Arrays.stream(demandIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
-							System.out.println("demandDetails******"+demandDetails);
 							demandId[i]=demandDetails;
 						}
 						
@@ -743,7 +727,6 @@ public class FundApprovalController
 							String fundRequestDetails = Arrays.stream(fundApprovalIds).map(id -> id.split("#")[0]).collect(Collectors.joining(","));
 							cfFundRequestId[i]=fundRequestDetails;
 						}
-						System.out.println("demandId[i]*******"+demandId[i]);						
 						fundRequestSerialNo[i]=serialNo;
 						selectedFundRequestId[i]=req.getParameter("CFFundRequestId-"+serialNo);
 						commitmentId[i]=req.getParameter("CFCommitmentId-"+serialNo);
@@ -945,7 +928,6 @@ public class FundApprovalController
 			String itemNomenclature=req.getParameter("ItemFor");
 			String justification=req.getParameter("justification");
 			String fundRequestAmount=req.getParameter("TotalFundRequestAmount");
-			System.out.println("*****fundRequestAmount****"+fundRequestAmount);
 			String apr=req.getParameter("AprilMonth");
 			String may=req.getParameter("MayMonth");
 			String jun=req.getParameter("JuneMonth");

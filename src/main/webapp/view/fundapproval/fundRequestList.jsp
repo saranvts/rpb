@@ -298,7 +298,6 @@ input[name="ItemNomenclature"]::placeholder {
 		String MemberType =(String)request.getAttribute("MemberType");
 		String currentFinYear =(String)request.getAttribute("currentFinYear");
 		String previousFinYear =(String)request.getAttribute("previousFinYear");
-		System.out.println("MemberType*****"+MemberType);
 		
 		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="",budgetType=null,proposedProject = null,finYear = null;
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
@@ -540,7 +539,7 @@ input[name="ItemNomenclature"]::placeholder {
 											  	
 											  	<%if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1; %> 
 					                       		
-						                       			<img id="noteSheet" onclick="window.open('NoteSheetPrint.htm?fundApprovalId=<%=data[0]%>', '_blank')" data-tooltip="Note Sheet Download" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/notesheet.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+						                       			<img id="noteSheet" onclick="window.open('NoteSheetPrint.htm?fundApprovalId=<%=data[0]%>', '_blank')" data-tooltip="Note Sheet Download" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/note-pad.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 					                       		
 					                       		<%}%>
 											  	

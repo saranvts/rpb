@@ -502,10 +502,6 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		try {
 			Query query= manager.createNativeQuery("UPDATE ibas_fund_members_linked SET IsApproved=:isApproved WHERE FundApprovalId=:fundApprovalId AND EmpId=:empId AND IsActive='1'");
 			
-			System.out.println("empId *****"+ empId);
-			System.out.println("isApproved *****"+ isApproved);
-			System.out.println("fundApprovalId *****"+ fundApprovalId);
-			
 			query.setParameter("empId", empId);
 			query.setParameter("isApproved", isApproved);
 			query.setParameter("fundApprovalId", fundApprovalId);
@@ -582,19 +578,6 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 
 			Query query= manager.createNativeQuery("SELECT f.FundApprovalId, dm.DivisionId, dm.DivisionName, f.EstimateType, f.DivisionId, f.FinYear, f.REFBEYear, f.ProjectId, f.BudgetHeadId, h.BudgetHeadDescription, f.BudgetItemId, i.HeadOfAccounts, i.MajorHead, i.MinorHead, i.SubHead, i.SubMinorHead,f.BookingId, f.CommitmentPayIds, f.ItemNomenclature, f.Justification, ROUND(IFNULL((f.Apr+f.May+f.Jun+f.Jul+f.Aug+f.Sep+f.Oct+f.Nov+f.December+f.Jan+f.Feb+f.Mar)/:rupeeValue,0),2) AS EstimatedCost, f.InitiatingOfficer, e.EmpName, ed.Designation, f.Remarks, f.Status, f.PDIDemandDate, dm.DivisionCode,ifa_latest_approver.Remarks AS ChairmanRemarks, attach.Attachments,pf.ProjectShortName FROM fund_approval f LEFT JOIN  "+mdmdb+".employee e ON e.EmpId=f.InitiatingOfficer LEFT JOIN "+mdmdb+".employee_desig ed ON ed.DesigId=e.DesigId LEFT JOIN tblbudgethead h ON h.BudgetHeadId=f.BudgetHeadId LEFT JOIN tblbudgetitem i ON i.BudgetItemId=f.BudgetItemId LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=:divisionId LEFT JOIN (SELECT att.FundApprovalId,GROUP_CONCAT(CONCAT(att.FileName, '::', att.OriginalFileName, '::', att.Path, '::',att.FundApprovalAttachId) SEPARATOR '||') AS Attachments FROM fund_approval_attach att GROUP BY att.FundApprovalId) attach ON attach.FundApprovalId = f.FundApprovalId LEFT JOIN (SELECT t.FundApprovalId, t.Remarks FROM ibas_fund_approval_trans t INNER JOIN ibas_flow_details fd ON  fd.FlowDetailsId = t.FlowDetailsId AND fd.StatusCode = 'CC' AND fd.StatusType = 'A') ifa_latest_approver ON ifa_latest_approver.FundApprovalId = f.FundApprovalId LEFT JOIN "+mdmdb+".pfms_initiation pf ON pf.InitiationId = :proposedProject  WHERE f.FinYear=:finYear AND f.ProjectId=0 AND (('-1'=:budget) OR ((CASE WHEN 'N'=:budget THEN f.InitiationId = :proposedProject ELSE f.InitiationId = 0 END) AND (CASE WHEN 0=:budgetHeadId THEN 1=1 ELSE f.BudgetHeadId=:budgetHeadId END) AND (CASE WHEN 0=:budgetItemId THEN 1=1 ELSE f.BudgetItemId=:budgetItemId END))) AND f.EstimateType=:estimateType AND (CASE WHEN '-1'=:divisionId THEN 1=1 ELSE f.DivisionId=:divisionId END) AND (CASE WHEN 'A'=:loginType THEN 1=1 ELSE (CASE WHEN :memberType='CC' OR :memberType='CS' THEN 1=1 ELSE f.DivisionId IN (SELECT DivisionId FROM "+mdmdb+".employee WHERE EmpId=:empId) END) END) AND ( CASE WHEN :statuss = 'NA' THEN 1 WHEN :statuss = 'A'  THEN CASE WHEN f.Status = 'A' THEN 1 ELSE 0 END ELSE CASE WHEN f.Status <> 'A' THEN 1 ELSE 0 END END) = 1 HAVING EstimatedCost BETWEEN :fromCost AND :toCost ORDER BY h.BudgetHeadDescription DESC");
 
-			System.out.println("divisionId****"+divisionId);
-			System.out.println("estimateType****"+estimateType);
-			System.out.println("finYear****"+finYear);
-			System.out.println("loginType****"+loginType);
-			System.out.println("empId****"+empId);
-			System.out.println("budgetHeadId****"+budgetHeadId);
-			System.out.println("budgetItemId****"+budgetItemId);
-			System.out.println("fromCost****"+fromCost);
-			System.out.println("toCost****"+toCost);
-			System.out.println("status****"+status);
-			System.out.println("memberType****"+memberType);
-			System.out.println("RupeeValue****"+RupeeValue);
-			
 			query.setParameter("divisionId", divisionId);
 			query.setParameter("estimateType", estimateType);
 			query.setParameter("finYear",finYear);

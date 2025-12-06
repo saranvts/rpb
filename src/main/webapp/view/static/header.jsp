@@ -1015,8 +1015,7 @@ function rupeeFormat(amount) {
 		
 		
 		<ul class="navbar-nav ml-auto"> 						
-	 <% MainModuleList.forEach(row -> System.out.println(Arrays.toString(row)));
-	 for (Object[] mainModule : MainModuleList) { %>
+	 <% for (Object[] mainModule : MainModuleList) { %>
 									
 	 <%if((mainModule[1].toString()).equalsIgnoreCase("Fund Approval") || (mainModule[1].toString()).equalsIgnoreCase("RPB Master") || (mainModule[1].toString()).equalsIgnoreCase("Reports")) {%>
 		    

@@ -662,9 +662,6 @@ if(fundDetails!=null && fundDetails.length > 0)
   <%String success=(String)request.getParameter("resultSuccess"); 
    String failure=(String)request.getParameter("resultFailure");%>  
    
-   <%System.out.println("success****"+success); %>
-   <%System.out.println("failure****"+failure); %>
-
 <div class="page card dashboard-card" style="background-color:white;padding-top: 0px;padding-left: 0px;padding-right: 0px;width: 98%;margin: auto;margin-top: 8px;">		
 
 <div class="container">

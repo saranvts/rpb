@@ -399,8 +399,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 				
 			}
 			
-			System.out.println("fundDto.getAction()****"+fundDto.getAction());
-			
 			String transAction = "";
 			if(fundDto.getAction()!=null) 
 			{

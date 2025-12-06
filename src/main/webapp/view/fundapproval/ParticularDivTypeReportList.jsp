@@ -314,10 +314,6 @@ input[name="ItemNomenclature"]::placeholder {
 		String AmtFormat =(String)request.getAttribute("amountFormat");
 		String MemberType =(String)request.getAttribute("MemberType");
 		
-		System.out.println("fromYear*****"+fromYear);
-		System.out.println("toYear*****"+toYear);
-		System.out.println("estimateType*****"+estimateType);
-
 		Object DivName = "", DivCode = "";
 		String estimateTypeName = "";
 		String financialYear = "";

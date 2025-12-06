@@ -48,15 +48,8 @@ public class SecurityConfiguration
 						.requestMatchers("/", "/login", "/RPB", "/webjars/**", "/resources/**", "/view/**", "/sessionExpired").permitAll()
 						.anyRequest().authenticated()
 				)
-				.exceptionHandling(ex -> ex
-						.authenticationEntryPoint((request, response, authException) ->
-								response.sendRedirect("/rpb/login")) // <--- This line redirects invalid URLs
-				)
 				.logout(logout -> logout
 						.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-						.invalidateHttpSession(true)
-						.clearAuthentication(true)
-						.deleteCookies("JSESSIONID")
 						.addLogoutHandler(userLogoutHandler())
 						.logoutSuccessHandler(userLogoutSuccessHandler)
 				)
@@ -64,12 +57,9 @@ public class SecurityConfiguration
 						.loginPage("/login")
 						.successHandler(loginSuccessHandler)
 				)
-				.formLogin(form -> form
-						.loginPage("/rpb/login")
-						.defaultSuccessUrl("/rpb/MainDashBoard.htm", true)
-						.permitAll()
-				)
+				
 				.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+				
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
 						.invalidSessionUrl("/sessionExpired")
 						.sessionConcurrency(concurrency -> concurrency
