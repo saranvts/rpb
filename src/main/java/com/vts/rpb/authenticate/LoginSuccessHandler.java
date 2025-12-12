@@ -60,11 +60,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 				 if(EmpDetails != null && EmpDetails.length > 0) {
 					 ses.setAttribute("LoginId", login.getLoginId());
 		    	      ses.setAttribute("Division",EmpDetails[7]);
-		    	      ses.setAttribute("LoginType", login.getLoginType());
+		    	      ses.setAttribute("LoginType", login.getRpbLoginType());
 		    	      ses.setAttribute("EmployeeId", login.getEmpId());
 		    	      ses.setAttribute("FormRole", login.getFormRoleId());
-		    	      ses.setAttribute("MainModuleList", authService.getMainModuleList(login.getLoginType()));
-		    	      ses.setAttribute("SubModuleList", authService.getSubModuleList(login.getLoginType()));
 		    	      ses.setAttribute("Username",auth.getName());
 		    	      ses.setAttribute("EmployeeNo", EmpDetails[2]);
 		    	      ses.setAttribute("EmployeeName", EmpDetails[0]);
@@ -72,7 +70,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 		    	      ses.setAttribute("EmployeeDivisionCode", EmpDetails[5]);
 		    	      ses.setAttribute("EmployeeDivisionName", EmpDetails[6]);
 		    	      ses.setAttribute("client_name", labcode);
-		    	      ses.setAttribute("LoginTypeName", masterService.FormRoleName(login.getLoginType()));
+		    	      ses.setAttribute("LoginTypeName", masterService.FormRoleName(login.getRpbLoginType()));
 
 		    		validUrl=req.getContextPath() + "/MainDashBoard.htm";
 				 }

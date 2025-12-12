@@ -222,13 +222,15 @@ public class FundApprovalController
 				{
 					finYear=fromYear+"-"+toYear;
 				}
+
+			String memberType = fundApprovalService.getCommitteeMemberCurrentStatus(empId);
 				
-			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,loginType,formRole);
+			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,memberType,formRole);
 			List<Object[]> approvedList= fundApprovalService.getFundApprovedList(empId,finYear,loginType);
 			
 			req.setAttribute("ApprovalPendingList",approvalPendingList);
 			req.setAttribute("ApprovalList",approvedList);
-			req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(empId));
+			req.setAttribute("employeeCurrentStatus",memberType);
 			req.setAttribute("FromYear",fromYear);
 			req.setAttribute("ToYear",toYear);
 			
@@ -253,7 +255,10 @@ public class FundApprovalController
 		try {
 			
 			String fundApprovalId=req.getParameter("FundApprovalIdSubmit");
-			
+			String approvalRoleForDH = req.getParameter("approvalRoleForDH");
+
+			req.setAttribute("approvalRoleForDH",approvalRoleForDH);
+
 			if(fundApprovalId!=null)
 			{ 
 				List<Object[]> fundDetails = fundApprovalService.getParticularFundApprovalDetails(fundApprovalId,empId);
@@ -265,7 +270,7 @@ public class FundApprovalController
 						Object[] particularFundDetails=fundDetails.get(0);
 						
 						req.setAttribute("fundDetails",particularFundDetails);
-						
+
 						String fromYear =null,toYear = null,finYear = null;
 						finYear = particularFundDetails[2]!=null ? particularFundDetails[2].toString() : null;
 						fromYear = finYear != null ? finYear.split("-")[0] : null;						toYear = finYear != null ? finYear.split("-")[1] : null;
@@ -389,9 +394,12 @@ public class FundApprovalController
 		
 		String fundApprovalId=req.getParameter("fundApprovalId");
 		String memberLinkedId=req.getParameter("MemberLinkedId");
+		String approvalRoleForDH=req.getParameter("approvalRoleForDH");
 		String action=req.getParameter("Action");
 		String remarks=req.getParameter("remarks");
 		String memberStatus=req.getParameter("memberStatus");
+
+		redir.addAttribute("approvalRoleForDH", approvalRoleForDH);
 		
 		try
 		{
@@ -453,6 +461,7 @@ public class FundApprovalController
 			e.printStackTrace();
 			logger.error(new Date() + " Inside BudgetApprovalForward.htm " + UserName, e);
 			redir.addAttribute("FundApprovalIdSubmit", fundApprovalId);
+			redir.addAttribute("approvalRoleForDH", approvalRoleForDH);
 			redir.addAttribute("resultFailure", "OOPS &#128551; Something Went Wrong..!");
 			return "redirect:/FundApprovalPreview.htm";
 		}
@@ -1386,7 +1395,7 @@ public class FundApprovalController
 					
 				String fundApprovalAttachId=req.getParameter("attachid");
 				String fundRequestId=req.getParameter("fundRequestId");
-				int count=fundApprovalService.FundRequestAttachDelete(Long.valueOf(fundApprovalAttachId) );
+				int count=fundApprovalService.FundRequestAttachDelete(Long.valueOf(fundApprovalAttachId));
 				if (count > 0) {
 					redir.addAttribute("resultSuccess", "Fund Request Attachment Deleted Successfully ..&#128077;");
 			      } else {

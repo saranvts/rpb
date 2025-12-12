@@ -112,7 +112,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public List<Object[]> getTransactionStatusDetails(String action, String actionType) throws Exception;
 
-	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId);
+	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId, String memberStatus);
 
 	public long fundApprovalQuerySubmit(FundApprovalQueries FundApprovalQueries);
 	

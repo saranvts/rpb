@@ -153,6 +153,17 @@
 			  width: 70% !important;
 			  max-width: 100%;
 			}
+
+	.Approval-Box
+	{
+	        background-color: #c0ffeb;
+            height: 1.3rem;
+            width: 1.3rem;
+            border-radius: 2px;
+            margin-bottom: -5px;
+            box-shadow: 0px 0px 9px #a5a5a5;
+    }
+
   </style>
 </head>
 <body>
@@ -164,6 +175,7 @@ String toYear=(String)request.getAttribute("ToYear");
 String fundListApprovedOrNot=(String)request.getAttribute("FundListApprovedOrNot");
 String DivisionDetails=(String)request.getAttribute("DivisionDetails");
 String redirectedvalue=(String)request.getAttribute("redirectedvalueForward");
+System.out.println("redirectedvalue***"+redirectedvalue);
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
 if(currentEmpStatus == null)
 {
@@ -254,6 +266,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noted
 									         <%}else{ %> NA <%} %></label>
 		<span style="font-weight: 600;color: #843daf;">&nbsp;&nbsp;&nbsp;  RE - Revised Estimate / FBE - Forecast Budget Estimate</span>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="Approval-Box"></span>&nbsp;&nbsp;<span style="font-weight: 600;color: #ff6000;'"> Division Head Recommendation</span>
 		
 		    <div class="tab-content card">
 		      <section id="panel-pending" class="tab-panel">
@@ -276,9 +289,14 @@ String failure=(String)request.getParameter("resultFailure");%>
 							<%
 							  int sn=1; 
 							  if (approvalPendingList != null && approvalPendingList.size() != 0) { 
-								      for (Object[] obj : approvalPendingList) { 
+								      for (Object[] obj : approvalPendingList) {
+								      String isTempDH = null;
+								       if(obj[23] != null)
+                                       {
+                                            isTempDH = obj[23].toString();
+                                       }
 						    %>
-			                 <tr>
+			                 <tr <% if(isTempDH!=null && isTempDH.equalsIgnoreCase("Y")) { %> style="background-color: #c0ffeb;" <% } %> >
 			                     <td align="center"><%=sn++ %>.</td>
 			                     <% if(obj[1]!=null && obj[1].toString().equalsIgnoreCase("R")){%>
 			                     <td align="center" style="width: 12%;">RE</td>
@@ -333,10 +351,14 @@ String failure=(String)request.getParameter("resultFailure");%>
 									   String action = "";
 									   String tooltip = "";
 									   boolean showPending = false;
-									   
+                                        if(isTempDH!=null && isTempDH.equalsIgnoreCase("Y"))
+                                        {
+                                            currentEmpStatus = currentEmpStatus + "-" + isTempDH;
+                                        }
+
 									   switch(currentEmpStatus.toUpperCase()) {
 									       case "DH":
-									    	   showPending = (dhStatus.equalsIgnoreCase("Y"));
+									    	   showPending = dhStatus.equalsIgnoreCase("Y");
 									           action = "Recommend";
 									           tooltip = "Preview & Recommend";
 									           break;
@@ -356,6 +378,15 @@ String failure=(String)request.getParameter("resultFailure");%>
 									           action = "Approval";
 									           tooltip = "Preview & Approve";
 									           break;
+
+                                           case "CM-Y":
+                                           case "SE-Y":
+                                           case "CS-Y":
+                                           case "CC-Y":
+                                               showPending = false;
+                                               action = "Recommend";
+                                               tooltip = "Preview & Recommend";
+                                               break;
 									   }
 									%>
 			                        
@@ -375,6 +406,7 @@ String failure=(String)request.getParameter("resultFailure");%>
 									       </button>
 									       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 									       <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
+									       <input type="hidden" name="approvalRoleForDH" value="<%= obj[23] %>">
 									   </form>
 									<% } %>
 			                          
@@ -416,9 +448,14 @@ String failure=(String)request.getParameter("resultFailure");%>
 							<%
 							  int sN=1; 
 							  if (approvedList != null && approvedList.size() != 0) { 
-								      for (Object[] obj : approvedList) { 
+								      for (Object[] obj : approvedList) {
+								       String isTempDH = null;
+                                       if(obj[23] != null)
+                                         {
+                                              isTempDH = obj[23].toString();
+                                         }
 						    %>
-			                 <tr>
+			                 <tr <% if(isTempDH!=null && isTempDH.equalsIgnoreCase("Y")) { %> style="background-color: #c0ffeb;" <% } %>>
 			                     <td align="center"><%=sN++ %>.</td>
 			                     <% if(obj[1]!=null && obj[1].toString().equalsIgnoreCase("R")){%>
 			                     <td align="center" style="width: 12%;">RE</td>

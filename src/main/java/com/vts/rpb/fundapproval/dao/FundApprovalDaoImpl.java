@@ -57,7 +57,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 		}catch (Exception e) {
 			logger.error(new Date() +"Inside DAO getFundApprovalList() "+ e);
 			e.printStackTrace();
-			return null;
+			throw new RuntimeException("getFundApprovalList something went wwrong");
 		}
 	}
 	
@@ -239,14 +239,14 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 
 	@Override
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception {
+	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType,long formRole) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("CALL Ibas_FundApprovalListAndApprovedList(:finYear,:empId,:ListType,:loginType)");
-			System.out.println("CALL Ibas_FundApprovalListAndApprovedList('"+finYear+"','"+empId+"','F','"+loginType+"');");
+			Query query= manager.createNativeQuery("CALL Ibas_FundApprovalListAndApprovedList(:finYear,:empId,:ListType)");
+			System.out.println("CALL Ibas_FundApprovalListAndApprovedList('"+finYear+"','"+empId+"','F');");
 			query.setParameter("empId",empId);
 			query.setParameter("finYear",finYear);
 			query.setParameter("ListType","F");
-			query.setParameter("loginType",loginType);
+			//query.setParameter("memberType",memberType);
 			//query.setParameter("formRole",formRole);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
@@ -261,12 +261,12 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getFundApprovedList(String empId, String finYear,String loginType) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("CALL Ibas_FundApprovalListAndApprovedList(:finYear,:empId,:ListType,:loginType)");
-			System.out.println("CALL Ibas_FundApprovalListAndApprovedList('"+finYear+"','"+empId+"','A','"+loginType+"');");
+			Query query= manager.createNativeQuery("CALL Ibas_FundApprovalListAndApprovedList(:finYear,:empId,:ListType)");
+			System.out.println("CALL Ibas_FundApprovalListAndApprovedList('"+finYear+"','"+empId+"','A');");
 			query.setParameter("empId",empId);
 			query.setParameter("finYear",finYear);
 			query.setParameter("ListType","A");
-			query.setParameter("loginType",loginType);
+			//query.setParameter("loginType",loginType);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			
@@ -648,16 +648,8 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> committeeMemberFundApprovalCount(String committeeMember,String empId) throws Exception{
 		try {
-			Query query= manager.createNativeQuery("SELECT  l.memberType, f. EstimateType, f.FinYear,dm.DivisionCode,ROUND(IFNULL((f.Apr+f.May+f.Jun+f.Jul+f.Aug+f.Sep+f.Oct+f.Nov+f.December+f.Jan+f.Feb+f.Mar),0),2) AS EstimatedCost, f.FundApprovalId \n"
-					+ "FROM ibas_fund_members_linked l\n"
-					+ "LEFT JOIN fund_approval f  ON f.fundApprovalId= l.fundApprovalId LEFT JOIN "+mdmdb+".division_master dm ON dm.DivisionId=f.DivisionId \n"
-					+ "WHERE (l.memberType = :member OR (l.memberType = 'SE' AND 'CM' = :member)  ) AND l.empID = :EmpId AND l.isApproved = 'N' AND (f.status='F' OR f.status='B')\n"
-					+ "  AND ((l.memberType = 'DH')OR ( l.memberType IN ('CM','SE') AND EXISTS ( SELECT 1 FROM ibas_fund_members_linked X WHERE x.fundApprovalId = l.fundApprovalId AND x.memberType = 'DH' AND x.isApproved = 'Y' ) )\n"
-					+ "  OR ( l.memberType = 'CS' AND EXISTS (SELECT 1 FROM ibas_fund_members_linked X WHERE x.fundApprovalId = l.fundApprovalId AND x.memberType = 'DH' AND x.isApproved = 'Y')\n"
-					+ "  AND NOT EXISTS (SELECT 1 FROM ibas_fund_members_linked Y WHERE y.fundApprovalId = l.fundApprovalId AND y.memberType IN ('CM','SE') AND y.isApproved = 'N' ) )\n"
-					+ "  OR ( l.memberType = 'CC' AND EXISTS (\n"
-					+ "  SELECT 1 FROM ibas_fund_members_linked z WHERE z.fundApprovalId = l.fundApprovalId AND z.memberType = 'CS' AND z.isApproved = 'Y'))) AND l.IsSkipped = 'N' ORDER BY l.fundApprovalId;\n");
-			query.setParameter("member", committeeMember);
+			Query query= manager.createNativeQuery("SELECT l.memberType, f. EstimateType, f.FinYear,dm.DivisionCode,ROUND(IFNULL((f.Apr+f.May+f.Jun+f.Jul+f.Aug+f.Sep+f.Oct+f.Nov+f.December+f.Jan+f.Feb+f.Mar),0),2) AS EstimatedCost, f.FundApprovalId FROM ibas_fund_members_linked l LEFT JOIN fund_approval f  ON f.fundApprovalId = l.fundApprovalId LEFT JOIN "+ mdmdb +".division_master dm ON dm.DivisionId=f.DivisionId WHERE (l.memberType = :memberType OR (l.memberType = 'SE' AND 'CM' = :memberType)) AND l.empId = :EmpId AND l.isApproved = 'N' AND (f.status='F' OR f.status='B') AND ((l.memberType = 'DH') OR (l.memberType IN ('CM','SE') AND EXISTS (SELECT 1 FROM ibas_fund_members_linked fml WHERE fml.fundApprovalId = l.fundApprovalId AND fml.memberType = 'DH' AND fml.isApproved = 'Y')) OR (l.memberType = 'CS' AND EXISTS (SELECT 1 FROM ibas_fund_members_linked fml WHERE fml.fundApprovalId = l.fundApprovalId AND fml.memberType = 'DH' AND fml.isApproved = 'Y') AND NOT EXISTS (SELECT 1 FROM ibas_fund_members_linked fml WHERE fml.fundApprovalId = l.fundApprovalId AND fml.memberType IN ('CM','SE') AND fml.isApproved = 'N')) OR (l.memberType = 'CC' AND EXISTS (SELECT 1 FROM ibas_fund_members_linked z WHERE z.fundApprovalId = l.fundApprovalId AND z.memberType = 'CS' AND z.isApproved = 'Y'))) AND l.IsSkipped = 'N' ORDER BY l.fundApprovalId");
+			query.setParameter("memberType", committeeMember);
 			query.setParameter("EmpId", empId);
 			return (List<Object[]>) query.getResultList();
 			
@@ -869,18 +861,19 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 
 	@Override
-	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId) {
+	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId, String memberStatus) {
 		 try {
-		        String jpql = "SELECT f FROM ibas_fund_members_linked f WHERE f.fundApprovalId = :fundApprovalId AND f.empId = :empId";
+		        String jpql = "SELECT f FROM ibas_fund_members_linked f WHERE f.fundApprovalId = :fundApprovalId AND f.empId = :empId AND f.memberType = :memberStatus";
 		        return manager.createQuery(jpql, FundLinkedMembers.class)
 		                      .setParameter("empId", empId)
 		                      .setParameter("fundApprovalId", fundApprovalId)
+		                      .setParameter("memberStatus", memberStatus)
 		                      .getSingleResult();
 		        
 		    } catch (Exception e) {
 		        logger.error(new Date() + " Inside DAO getLinkedMemberDetailsByEmpId() " + e);
 		        e.printStackTrace();
-		        return null;
+			 throw new RuntimeException("getLinkedMemberDetailsByEmpId something went wwrong");
 		    }
 	}
 	

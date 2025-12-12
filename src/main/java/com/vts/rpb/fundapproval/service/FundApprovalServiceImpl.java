@@ -148,8 +148,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	    
 	    if (fundApprovalId > 0) 
 	    {
-	        String filePath = Paths.get(uploadpath, "FundApproval", String.valueOf(fundApprovalId)).toString();
-	        String pathDB = Paths.get("FundApproval", String.valueOf(fundApprovalId)).toString();
+	        String filePath = Paths.get(uploadpath, "fund-approval", "fund-details-" + String.valueOf(fundApprovalId)).toString();
+	        String pathDB = Paths.get("fund-approval", "fund-details-" + String.valueOf(fundApprovalId)).toString();
 	        
 	        File filepath = new File(filePath);
 	        if (!filepath.exists()) {
@@ -175,7 +175,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	                    modal.setPath(pathDB);
 	                    
 	                    // Delete old file
-	                    File oldFile = new File(env.getProperty("ApplicationFilesDrive") + "FundApproval" + 
+	                    File oldFile = new File(env.getProperty("ApplicationFilesDrive") + "fund-approval",
 	                        File.separator + existingAttach[1] + File.separator + existingAttach[3]);
 	                    Files.deleteIfExists(oldFile.toPath());
 	                    
@@ -346,7 +346,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		logger.info(new Date() + "Inside SERVICE FundRequestAttachDelete ");
 		Object[] attachdata = fundApprovalDao.FundRequestAttachData(fundApprovalAttachId);
 		File my_file=null;
-		my_file = new File(env.getProperty("ApplicationFilesDrive")+"FundApproval"+File.separator + attachdata[1] +File.separator + attachdata[3]);
+		my_file = new File(env.getProperty("ApplicationFilesDrive") + File.separator + attachdata[4] + File.separator + attachdata[3]);
 		boolean result = Files.deleteIfExists(my_file.toPath());
 	 if(result) {
 			return fundApprovalDao.FundRequestAttachDelete(fundApprovalAttachId);
@@ -514,8 +514,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception {
-		return fundApprovalDao.getFundPendingList(empId,finYear,loginType,formRole);
+	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType,long formRole) throws Exception {
+		return fundApprovalDao.getFundPendingList(empId,finYear,memberType,formRole);
 	}
 
 	@Override
@@ -568,10 +568,11 @@ public class FundApprovalServiceImpl implements FundApprovalService
 		
 		return status;
 	}
-	
+
+	@Transactional
 	private void updateParticularLinkedMemberDetails(FundApprovalDto fundDto, long empId, long fundApprovalId) throws Exception {
 		
-		FundLinkedMembers linkedMemberModal = fundApprovalDao.getLinkedMemberDetailsByEmpId(empId, fundApprovalId);
+		FundLinkedMembers linkedMemberModal = fundApprovalDao.getLinkedMemberDetailsByEmpId(empId, fundApprovalId, fundDto.getMemberStatus());
 		if(linkedMemberModal != null) 
 		{
 			linkedMemberModal.setIsApproved("Y");

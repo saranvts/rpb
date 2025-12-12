@@ -37,7 +37,7 @@ public interface FundApprovalService
 
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception;
 
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception;
+	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType,long formRole) throws Exception;
 
 	public List<Object[]> getFundApprovedList(String empId, String finYear,String loginType) throws Exception;
 

@@ -578,6 +578,7 @@ List<Object[]> employeeList=(List<Object[]>)request.getAttribute("AllEmployeeDet
 
 long empId = (Long) session.getAttribute("EmployeeId");
 String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
+String approvalRoleForDH=(String)request.getAttribute("approvalRoleForDH");
 FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
 if(currentEmpStatus == null){
 	currentEmpStatus = "NA";
@@ -730,9 +731,17 @@ if(fundDetails!=null && fundDetails.length > 0)
 
 					    <%if(masterFlowDetails != null){ %>
 
+					    <% System.out.println("approvalRoleForDH*****"+approvalRoleForDH); %>
+					    <% if(approvalRoleForDH!=null){ %>
+                            <% if(approvalRoleForDH.equalsIgnoreCase("Y")){
+                                currentEmpStatus = "DH";
+                             } %>
+					    <% } %>
+
 						    <% for(Object[] masterList : masterFlowDetails){ 
 						    
 						    boolean isCurrentEmp = masterList[3] != null && empId == (Long.parseLong(masterList[3].toString()));
+						    boolean isTempDH = !currentEmpStatus.equalsIgnoreCase("DH") && (approvalRoleForDH != null && approvalRoleForDH.equalsIgnoreCase("Y"));
 						    boolean isApproved = masterList[4] != null && (masterList[4].toString().equalsIgnoreCase("Y"));
 						    String isSkippedStatus = masterList[12]!=null ? masterList[12].toString() : "N";
 						    %>
@@ -780,6 +789,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                     
                     <%String[] linkedMembers = linkedMemberIdsStr.split(",");
                     String[] empIds = empIdsStr.split(",");
+
                     
                     String linkedMemberId = IntStream.range(0, linkedMembers.length)
                     	    .filter(i -> empIds[i]!=null && Long.parseLong((empIds[i].toString())) == (empId)).mapToObj(i -> linkedMembers[i]).findFirst().orElse(null);
@@ -820,11 +830,11 @@ if(fundDetails!=null && fundDetails.length > 0)
 						
 						switch(currentEmpStatus.toUpperCase()) {
 						    case "CS":
-						        showPending = (dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus));
+						        showPending = ((approvalRoleForDH != null && approvalRoleForDH.equalsIgnoreCase("Y")) || dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus));
 
 						        break;
 						    case "CC":
-						        showPending = (dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus) || csStatus);
+						        showPending = ((approvalRoleForDH != null && approvalRoleForDH.equalsIgnoreCase("Y")) || dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus) || csStatus);
 
 						        break;
 						}
@@ -847,6 +857,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 				    			    <input type="hidden" id="EmpId" name="EmpId" value="<%=empId%>"/>
 									<input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 									    <input type="hidden" name="fundApprovalId" value="<%=fundApprovalId%>">
+									    <input type="hidden" name="approvalRoleForDH" value="<%=approvalRoleForDH%>">
 									    <input type="hidden" name="MemberLinkedId" value="<%=linkedMemberId%>">
 									    <input type="hidden" name="initiating_officer" <%if(initiatingOfficerId != null){ %> value="<%=initiatingOfficerId%>" <%} %>>
 									

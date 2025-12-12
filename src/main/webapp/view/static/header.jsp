@@ -964,8 +964,6 @@ function rupeeFormat(amount) {
        String labCode = (String)session.getAttribute("client_name");
        String LoginTypeName = (String)session.getAttribute("LoginTypeName");
        
-       List<Object[]> MainModuleList = (List<Object[]>)session.getAttribute("MainModuleList");
- 	  List<Object[]> SubModuleList =(List<Object[]>)session.getAttribute("SubModuleList");
  	 int temp=-1;
  	String applicationType = "F";
  	String memberType=(String)session.getAttribute("memberLoginType");
@@ -1013,73 +1011,43 @@ function rupeeFormat(amount) {
 		<span id="p1" style="font-family:Lato, sans-serif;font-size: 19px;font-weight: 700; color: #9dffef;"></span>
 		<span style="font-family: Lato, sans-serif;font-size: 15px;padding: 0px 16px 0px 10px;text-transform: capitalize !important;color: #70f7ff;margin-left: -0.3rem;font-weight: 600;"> &nbsp; <%if(EmpName!=null){%><%=EmpName %><%} %> <%if(EmployeeDesign!=null){%>,&nbsp;&nbsp;<%= EmployeeDesign %><%} %><%if(LoginTypeName!=null){ %>&nbsp;(<%=LoginTypeName %>)<%} %></span></div>				
 		
-		
-		<ul class="navbar-nav ml-auto"> 						
-	 <% for (Object[] mainModule : MainModuleList) { %>
-									
-	 <%if((mainModule[1].toString()).equalsIgnoreCase("Fund Approval") || (mainModule[1].toString()).equalsIgnoreCase("RPB Master") || (mainModule[1].toString()).equalsIgnoreCase("Reports")) {%>
-		    
-		    <% for (Object[] subModule : SubModuleList) {
-		    if (subModule[0].equals(mainModule[0])) { 
-		    	if(!"FundReport.htm".equalsIgnoreCase(subModule[1].toString())  && !"FbeReport.htm".equalsIgnoreCase(subModule[1].toString()) ){
-		    %>
-		    
+			<ul class="navbar-nav ml-auto"> 						
+
+				 <% if(logintype != null){ %>
+                     <% if(logintype.equalsIgnoreCase("A")){ %>
+
+                        <li class="nav-item active" style=" margin: 2px 4px;">
+                            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" role="button" aria-controls="otherSections" href="CommitteMaster.htm">
+                              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+                                &nbsp;<span style="font-weight: 700; color: #61f6ff; font-size: 15px;">Committee Master</span>
+                            </a>
+                        </li>
+
+                    <% } %>
+		        <% } %>
+		        
 		        <li class="nav-item active" style=" margin: 2px 4px;">
-		            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" 
-		               style="width: 95%;
-		                      margin: 2px 4px; /* top-bottom: 2px, left-right: 4px */
-		                      border-radius: 3px;
-		                      margin-top: 0.1rem;
-		                      padding-left: 13px;padding-right: 13px;"
-		               role="button"
-		               aria-controls="otherSections"
-		               class="text-nowrap bi-list"
-		               href="<%=subModule[1]%>">
+		            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" role="button" aria-controls="otherSections" href="FundRequest.htm">
 		              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
-		                &nbsp;
-		                <span style="font-weight: 700; color: white; font-size: 15px;">
-		                    <%=subModule[2] %>
-		                </span>
+		                &nbsp;<span style="font-weight: 700; color: #61f6ff; font-size: 15px;">Fund Request</span>
 		            </a>
 		        </li>
 		        
-		        <%} } 
-		    temp = Integer.parseInt(subModule[0].toString());
-			} %>
-		    <%} %>
-		
-		   <%} %>
-		   
-		   
-		   
-  <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button"
-           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-           style="font-weight:700; color:white;font-size: 16px;">
-            Reports
-        </a>
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="reportsDropdown" style="background-color:white; min-width: 165px; max-width: 250px;"> <!-- c5be2d -->
-            <% for (Object[] mainModule : MainModuleList) {
-                   for (Object[] subModule : SubModuleList) {
-                       if (subModule[0].equals(mainModule[0])) {
-                           if ("FundReport.htm".equalsIgnoreCase(subModule[1].toString()) 
-                               || "FbeReport.htm".equalsIgnoreCase(subModule[1].toString())) {
-            %>
-                <a class="dropdown-item subModule  hovercolorsub2 btn btn-sm" href="<%=subModule[1]%>" style="font-weight:700; color:white;">
-                    <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
-                    &nbsp;
-		                <span style="font-weight: 700; color: black; font-size: 15px;">
-                   <%=subModule[2] %>
-                    </span>
-                </a>
-            <%             } 
-                       }
-                   }
-               } 
-            %>
-        </div>
-    </li>
-</ul>
+		        <li class="nav-item active" style=" margin: 2px 4px;">
+		            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" role="button" aria-controls="otherSections" href="FundApprovalList.htm">
+		              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+		                &nbsp;<span style="font-weight: 700; color: #61f6ff; font-size: 15px;">Fund Approval</span>
+		            </a>
+		        </li>
+		        
+		         <li class="nav-item active" style=" margin: 2px 4px;">
+		            <a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" role="button" aria-controls="otherSections" href="FundReport.htm">
+		              <i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+		                &nbsp;<span style="font-weight: 700; color: #61f6ff; font-size: 15px;">Fund Report</span>
+		            </a>
+		        </li>
+					        
+			</ul>
 		   
 		       	
 							<div  class="btn-group HeaderNotifications">
