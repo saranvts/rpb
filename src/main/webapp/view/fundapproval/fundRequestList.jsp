@@ -364,8 +364,8 @@ input[name="ItemNomenclature"]::placeholder {
 					            <div class="form-inline">
 								 <select class="form-control select2" id="DivisionDetails" name="DivisionDetails" data-container="body" data-live-search="true" onchange="this.form.submit();"  <%if(previousYearFundStatus.equalsIgnoreCase("Y")){ %> disabled="disabled" <%} %>
 								  required="required"  style="align-items: center;font-size: 5px;min-width:440px;">
-								   <%if(loginType.equalsIgnoreCase("A") || MemberType.equalsIgnoreCase("CC") || MemberType.equalsIgnoreCase("CS")) {%> 
-								 	<option value="-1#All#All" <%if(divisionId!=null && (divisionId).equalsIgnoreCase("-1")){%> selected="selected" <%} %> hidden="true">All</option>
+								   <%if(loginType.equalsIgnoreCase("A") || "CC".contains(MemberType) || "CS".contains(MemberType)) {%>
+								 	<option value="-1#All#All" <%if(divisionId!=null && (divisionId).equalsIgnoreCase("-1")){%> selected="selected" <%} %>>All</option>
 								  <%} %> 								 
 									<%if(DivisionList!=null && DivisionList.size()>0){
 									for(Object[] List: DivisionList){ %>
@@ -510,7 +510,7 @@ input[name="ItemNomenclature"]::placeholder {
 												
 													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[31] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
-					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1; %> 
+					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) || "CC".contains(MemberType) || "CS".contains(MemberType))) { buttonStatus = 1; %>
 					                       		
 						                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm revise-btn tooltip-container" data-toggle="tooltip"
 											        name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="ReviseFundRequest.htm">
@@ -532,7 +532,7 @@ input[name="ItemNomenclature"]::placeholder {
 											  	
 											  	<%} %>
 											  	
-											  	<%if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1; %> 
+											  	<%if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) || "CC".contains(MemberType) || "CS".contains(MemberType))) { buttonStatus = 1; %>
 					                       		
 						                       			<img id="noteSheet" onclick="window.open('NoteSheetPrint.htm?fundApprovalId=<%=data[0]%>', '_blank')" data-tooltip="Note Sheet Download" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/note-pad.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 					                       		
@@ -541,7 +541,7 @@ input[name="ItemNomenclature"]::placeholder {
 
 
 											    
-											    <%if(("N".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ buttonStatus = 1; %>
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) || "CC".contains(MemberType) || "CS".contains(MemberType)))){ buttonStatus = 1; %>
 						                       		 
 						                       		 <button type="button" data-tooltip="Delete The Request" data-position="left"
 						                       		 onclick="confirmDelete('<%=data[0]%>')" class="btn btn-sm tooltip-container"><i class="fa-solid fa-trash" style="color:#FF4C4C;"></i></button>
@@ -671,7 +671,7 @@ input[name="ItemNomenclature"]::placeholder {
 						                </div>
 		                       </form>
 		                      
-		                       <%if((loginType!=null && loginType.equalsIgnoreCase("A")) || MemberType.equalsIgnoreCase("CS") || MemberType.equalsIgnoreCase("CC")){ %>
+		                       <%if((loginType!=null && loginType.equalsIgnoreCase("A")) || "CC".contains(MemberType) || "CS".contains(MemberType)){ %>
 		                       
 			                       <%if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){ %>
 			                       <div class="row" style="justify-content: center;"><span class="zoom-in-zoom-out" style="font-size:14px;font-weight:bold;color:#6000ff;"> 
@@ -1065,13 +1065,13 @@ function fillDropdown(inputId, memberType, sourceList, divisionHeadId, selectedV
         var empDesig = (memberType === "DH") ? value[3] : value[4];
 
         // role filter
-        if (memberType === "DH") {
+        if (memberType.split(',').map(v => v.trim()).includes('DH')) {
             // allow all
-        } else if ((memberType === "CM" || memberType === "SE") && listMemberType !== 'CM') {
+        } else if ((memberType.split(',').map(v => v.trim()).includes('CM') || memberType.split(',').map(v => v.trim()).includes('SE')) && listMemberType !== 'CM') {
             return;
-        } else if (memberType === "CC" && (listMemberType !== 'CC' && listMemberType !== 'SC')) {
+        } else if (memberType.split(',').map(v => v.trim()).includes('CC') && (!listMemberType.split(',').map(v => v.trim()).includes('CC') && !listMemberType.split(',').map(v => v.trim()).includes('SC'))) {
             return;
-        } else if (memberType === "CS" && listMemberType !== 'CS') {
+        } else if (memberType.split(',').map(v => v.trim()).includes('CS') && !listMemberType.split(',').map(v => v.trim()).includes('CS')) {
             return;
         }
 
