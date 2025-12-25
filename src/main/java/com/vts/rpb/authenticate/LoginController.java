@@ -86,9 +86,9 @@ public class LoginController {
 			}
 		    
 		    List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,memberType);
-			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId,memberType,loginType);
+			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId,memberType,loginType, empId, labCode);
 			
-			String memberLoginType=fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId));
+			String memberLoginType=fundApprovalService.getCommitteeMemberCurrentStatus(Long.parseLong(empId));
 			ses.setAttribute("memberLoginType", memberLoginType);
 		   req.setAttribute("DivisionList", DivisionList);
 		   req.setAttribute("DivisionDetailsList", DivisionDetailsList);

@@ -741,20 +741,27 @@ if(fundDetails!=null && fundDetails.length > 0)
 						    <% for(Object[] masterList : masterFlowDetails){ 
 						    
 						    boolean isCurrentEmp = masterList[3] != null && empId == (Long.parseLong(masterList[3].toString()));
+						    boolean divHilighter = isCurrentEmp && (
+						                                         (currentEmpStatus.equalsIgnoreCase("DH") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("DH")) ||
+						                                         (currentEmpStatus.equalsIgnoreCase("CM") && approvalRoleForDH.equalsIgnoreCase("N") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("CM")) ||
+						                                         (currentEmpStatus.equalsIgnoreCase("CM") &&  approvalRoleForDH.equalsIgnoreCase("N") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("SE")) ||
+						                                         (currentEmpStatus.equalsIgnoreCase("CS") && approvalRoleForDH.equalsIgnoreCase("N") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("CS")) ||
+						                                         (currentEmpStatus.equalsIgnoreCase("CC") && approvalRoleForDH.equalsIgnoreCase("N") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("CC"))
+						                                      );
 						    boolean isTempDH = !currentEmpStatus.equalsIgnoreCase("DH") && (approvalRoleForDH != null && approvalRoleForDH.equalsIgnoreCase("Y"));
 						    boolean isApproved = masterList[4] != null && (masterList[4].toString().equalsIgnoreCase("Y"));
 						    String isSkippedStatus = masterList[12]!=null ? masterList[12].toString() : "N";
 						    %>
 
-						    	<tr <%if(isCurrentEmp){ %> class="highlight-box" <%} %>>
+						    	<tr <%if(divHilighter){ %> class="highlight-box" <%} %>>
 					            <td style="width:40%;"><b><%=masterList[2] %>&nbsp;<%if(isSkippedStatus.equalsIgnoreCase("Y")){ %><span>Skipped</span> <%} %></b>
 					            <% if(masterList[8] != null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
 					            </td>
 					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(isCurrentEmp){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                <span <%if(divHilighter){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
 					                <%=masterList[6]!=null ? masterList[6] : "-" %><%= masterList[7] != null ? ", "+masterList[7] : "" %>
-					                <%if(isCurrentEmp){ %>
+					                <%if(divHilighter){ %>
 					                    <%if(!isApproved){ %><span class="badge badge-info"><%=masterList[9] != null ? masterList[9] : "" %></span><%} %>
 					                <%} %>
 					                

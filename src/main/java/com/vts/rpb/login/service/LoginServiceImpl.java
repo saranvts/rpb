@@ -24,8 +24,8 @@ public class LoginServiceImpl implements LoginService
 	}
 	
 	@Override
-	public List<Object[]> getDivisionDetailsList(int RupeeValue,String FinYear,Long divisionId,String memberType, String loginType) throws Exception{
-		return loginDao.getDivisionDetailsList(RupeeValue,FinYear,divisionId,memberType,loginType);
+	public List<Object[]> getDivisionDetailsList(int RupeeValue,String FinYear,Long divisionId,String memberType, String loginType, String empId, String labCode) throws Exception{
+		return loginDao.getDivisionDetailsList(RupeeValue,FinYear,divisionId,memberType,loginType, empId, labCode);
 	}
 
 }

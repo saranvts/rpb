@@ -266,7 +266,6 @@ String failure=(String)request.getParameter("resultFailure");%>
 									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noted
 									         <%}else{ %> NA <%} %></label>
 		<span style="font-weight: 600;color: #843daf;">&nbsp;&nbsp;&nbsp;  RE - Revised Estimate / FBE - Forecast Budget Estimate</span>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span class="Approval-Box"></span>&nbsp;&nbsp;<span style="font-weight: 600;color: #ff6000;'"> Division Head Recommendation</span>
 		
 		    <div class="tab-content card">
 		      <section id="panel-pending" class="tab-panel">

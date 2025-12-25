@@ -45,7 +45,7 @@ public class SecurityConfiguration
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception
 	{
 		http.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/", "/login", "/RPB", "/webjars/**", "/resources/**", "/view/**", "/sessionExpired").permitAll()
+						.requestMatchers("/", "/login", "/RPB", "HeaderHelpAction.htm", "/webjars/**", "/resources/**", "/view/**", "/sessionExpired").permitAll()
 						.anyRequest().authenticated()
 				)
 				.logout(logout -> logout

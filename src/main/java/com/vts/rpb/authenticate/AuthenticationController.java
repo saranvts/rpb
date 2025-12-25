@@ -42,26 +42,6 @@ public class AuthenticationController
 				ses.setAttribute("MainModuleId", "0");
 			}
 		}
-
-		/*******************************************Developer Tools Settings*********************************************************/
-		@RequestMapping(value = "UpdateDeveloperToolsStatus.htm")
-		public @ResponseBody String UpdateDeveloperToolsStatus(HttpServletRequest req, HttpSession ses) throws Exception {
-			String status = req.getParameter("status");
-			Gson json = new Gson();
-			try {
-				long parseStatus=0;
-					if(status!=null && !status.equalsIgnoreCase("null"))
-					{
-						ses.setAttribute("DeveloperToolsStatus", status);
-						parseStatus=Long.parseLong(status);
-					}
-				return json.toJson(parseStatus);	
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
 		
 		@RequestMapping(value = "HeaderHelpAction.htm", method = RequestMethod.GET)
 		public String headerHelpAction(HttpServletRequest req, HttpSession ses, HttpServletResponse res) throws Exception {

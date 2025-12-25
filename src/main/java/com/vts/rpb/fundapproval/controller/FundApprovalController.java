@@ -87,7 +87,7 @@ public class FundApprovalController
    		
    		try
    		{
-   			String committeeMember=fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId));
+   			String committeeMember=fundApprovalService.getCommitteeMemberCurrentStatus(Long.parseLong(empId));
    			String currentFinYear=DateTimeFormatUtil.getCurrentFinancialYear();
    			
    		 String FromYear = safeTrim(req.getParameter("FromYear"));
@@ -112,24 +112,16 @@ public class FundApprovalController
    			}
    			else
    			{
-   				if(loginType!=null && !loginType.equalsIgnoreCase("A"))
-   				{
-   					if(committeeMember!=null && (committeeMember.equalsIgnoreCase("CS") || committeeMember.equalsIgnoreCase("CC")))
-   					{
-   						DivisionId="-1";
-   	   					DivisionDetails="-1#All#All";
-   					}
-   					else
-   					{
-   						DivisionId=divisionId;
-   	   					DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
-   					}
-   				}
-   				else
-   				{
-   					DivisionId="-1";
-   					DivisionDetails="-1#All#All";
-   				}
+   				if(committeeMember.toUpperCase().contains("CS") || committeeMember.toUpperCase().contains("CC"))
+				{
+					DivisionId="-1";
+					DivisionDetails="-1#All#All";
+				}
+				else
+				{
+					DivisionId=divisionId;
+					DivisionDetails=divisionId+"#"+empDivisionCode+"#"+empDivisionName;
+				}
    			}
    			
    			String projectId="0";
@@ -148,8 +140,6 @@ public class FundApprovalController
    			
    			List<Object[]> RequisitionList=fundApprovalService.getFundApprovalList(FinYear,DivisionId,estimateType,loginType,empId,projectId,committeeMember);
    			List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,committeeMember);
-   			
-   			RequisitionList.stream().forEach(a->System.err.println("Request list->"+Arrays.toString(a)));
    			String previousFinYear=DateTimeFormatUtil.getPreviousFinYearByUserSelectedFinYear(FinYear);
    			List<Object[]> previousYearFundDetails=fundApprovalService.getPreviousYearFundDetailsList(previousFinYear,FinYear,loginType,committeeMember,empId);
 			if(previousYearFundDetails!=null && previousYearFundDetails.size()>0)
@@ -223,10 +213,10 @@ public class FundApprovalController
 					finYear=fromYear+"-"+toYear;
 				}
 
-			String memberType = fundApprovalService.getCommitteeMemberCurrentStatus(empId);
+			String memberType = fundApprovalService.getCommitteeMemberCurrentStatus(Long.parseLong(empId));
 				
 			List<Object[]> approvalPendingList=fundApprovalService.getFundPendingList(empId,finYear,memberType,formRole);
-			List<Object[]> approvedList= fundApprovalService.getFundApprovedList(empId,finYear,loginType);
+			List<Object[]> approvedList= fundApprovalService.getFundApprovedList(empId,finYear,memberType);
 			
 			req.setAttribute("ApprovalPendingList",approvalPendingList);
 			req.setAttribute("ApprovalList",approvedList);
@@ -249,7 +239,7 @@ public class FundApprovalController
 	public String fundApprovalPreview(HttpServletRequest req, HttpServletResponse resp, HttpSession ses, RedirectAttributes redir)
 	{
 		String UserName = (String) ses.getAttribute("Username");
-		long empId = (Long) ses.getAttribute("EmployeeId");
+		Long empId = (Long) ses.getAttribute("EmployeeId");
 		String labCode = (ses.getAttribute("client_name")).toString();
 		logger.info(new Date() + "Inside FundApprovalPreview.htm " + UserName);
 		try {
@@ -257,6 +247,10 @@ public class FundApprovalController
 			String fundApprovalId=req.getParameter("FundApprovalIdSubmit");
 			String approvalRoleForDH = req.getParameter("approvalRoleForDH");
 
+			if(approvalRoleForDH == null)
+			{
+				approvalRoleForDH = "N";
+			}
 			req.setAttribute("approvalRoleForDH",approvalRoleForDH);
 
 			if(fundApprovalId!=null)
@@ -302,7 +296,7 @@ public class FundApprovalController
 					}
 				}
 				
-				req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId)));
+				req.setAttribute("employeeCurrentStatus",fundApprovalService.getCommitteeMemberCurrentStatus(empId));
 				req.setAttribute("MasterFlowDetails",fundApprovalService.getMasterFlowDetails(fundApprovalId));
 				req.setAttribute("AllCommitteeMasterDetails",fundApprovalService.getAllCommitteeMemberDetails(LocalDate.now()));
 				req.setAttribute("AllEmployeeDetails",masterService.getAllOfficersList(labCode));
@@ -398,6 +392,12 @@ public class FundApprovalController
 		String action=req.getParameter("Action");
 		String remarks=req.getParameter("remarks");
 		String memberStatus=req.getParameter("memberStatus");
+
+		System.out.println("approvalRoleForDH*****"+approvalRoleForDH);
+		if(approvalRoleForDH == null)
+		{
+			approvalRoleForDH = "N";
+		}
 
 		redir.addAttribute("approvalRoleForDH", approvalRoleForDH);
 		

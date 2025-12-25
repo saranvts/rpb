@@ -1,0 +1,4 @@
+
+
+
+ALTER TABLE `login` ADD COLUMN `RpbLoginType` VARCHAR(1) DEFAULT 'U' NULL AFTER `LoginType`;

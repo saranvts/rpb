@@ -62,7 +62,7 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
 	public List<Object[]> getGenBudgetHeadItem(long budgetHeadId) throws Exception;
 
-	public List<Object[]> getCommitteeMemberCurrentStatus(String empId) throws Exception;
+	public List<Object[]> getCommitteeMemberCurrentStatus(Long empId) throws Exception;
 
 	public int updateParticularLinkedCommitteeDetails(long empId, long fundApprovalId,String isApproved) throws Exception;
 

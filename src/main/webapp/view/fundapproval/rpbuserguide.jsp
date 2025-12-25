@@ -10,7 +10,7 @@
     <title>RPB User Guide</title>
     <link rel="stylesheet" href="./webjars/bootstrap/4.0.0/css/bootstrap.min.css" />
     <!-- ----------  fontawesome  ---------- -->
-	<spring:url value="/webresources/fontawesome/css/all.css" var="fontawesome" />     
+	<spring:url value="/webresources/fontawesome/css/all.css" var="fontawesome" />
 	<link href="${fontawesome}" rel="stylesheet" />
     <style>
         .main-wrapper {
@@ -286,7 +286,12 @@
             </div>
             <div class="menu-container mt-3">
                 <div class="menu">
-                    <a href="#" class="menu-item active" data-target="Fund Request" data-toggle="tooltip"
+                    <a href="#" class="menu-item active" data-target="Overview" data-toggle="tooltip"
+					    data-placement="right" title="Overview">
+					    <i class="fa fa-caret-right"></i>
+					    <span class="menu-text">Overview</span>
+					</a>
+                    <a href="#" class="menu-item" data-target="Fund Request" data-toggle="tooltip"
                         data-placement="right" title="Fund Request">
                         <i class="fa fa-caret-right"></i>
                         <span class="menu-text">Fund Request</span>
@@ -306,8 +311,45 @@
         </div>
         <!-- Ending line of Sidebar Content -->
         <div class="main-content">
+            <!-- Starting line of Overview Content -->
+			<div id="Overview" class="content-section active">
+			    <div class="card border-secondary">
+			        <div class="card-header text-white text-center" style="background:#008080;">
+			            <h5>Overview</h5>
+			        </div>
+			        <div class="card-body">
+			            <h4 class="text-center mb-4" style="color:#008080;">Resource Planning Board</h4>
+
+			            <p style="text-align: justify;">
+			                <b>Resource Planning Board (RPB)</b> is a committee responsible for planning, reviewing,
+			                and approving financial requirements of the organization to ensure effective
+			                utilization and control of funds. All budget-related requests are examined by
+			                the RPB through a defined approval mechanism, enabling informed decision-making
+			                and proper allocation of resources.
+			            </p>
+
+			            <p style="text-align: justify;">
+			                <b>Revised Estimation (RE)</b> is the process in which the Forecast Budget Estimation (FBE)
+			                of the previous financial year is reviewed and revised based on actual expenditure,
+			                changes in requirements, or updated financial projections. <b>Forecast Budget Estimation
+			                (FBE)</b> is the process of creating fund requests for items for the upcoming financial
+			                year, based on anticipated needs and expected cash outflows. Both RE and FBE are
+			                submitted to the RPB for evaluation and approval as part of the annual financial
+			                planning cycle.
+			            </p>
+
+			            <p style="text-align: justify;">
+			                <b>Chairman</b> and <b>Secretary</b> have the provision to view all the division's requests in dashboard
+			                whereas <b>Users</b> can see only their division requests.
+			            </p>
+			        </div>
+			    </div>
+			</div>
+			<!-- Ending line of Overview Content -->
+
+
             <!-- Starting line of Fund Request Content -->
-            <div id="Fund Request" class="content-section active">
+            <div id="Fund Request" class="content-section">
                 <div class="card border-primary">
                     <div class="card-header bg-primary text-white">
                         <h5 class="ml-3">
@@ -556,8 +598,6 @@
     <button onclick="scrollToTop()" id="topBtn" title="Go to top">
         <i class="fa fa-arrow-up"></i>
     </button>
-    <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script>
         // Show the button after scrolling down 100px
         window.onscroll = function () {

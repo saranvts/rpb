@@ -312,11 +312,6 @@ input[name="ItemNomenclature"]::placeholder {
 			reYear=fundApprovalDto.getREYear();
 		}
 		
-		if(MemberType == null)
-		{
-			MemberType = "NA";
-		}
-		
 		if(loginType == null)
 		{
 			loginType = "NA";

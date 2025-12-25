@@ -53,7 +53,7 @@ public interface FundApprovalService
 	
 	public List<Object[]> getBudgetHeadItem(long ProjectId, long budgetHeadId) throws Exception;
 	
-	public String getCommitteeMemberCurrentStatus(String empId) throws Exception;
+	public String getCommitteeMemberCurrentStatus(Long empId) throws Exception;
 
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode,String action) throws Exception;
 	

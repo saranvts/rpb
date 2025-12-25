@@ -694,14 +694,14 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public String getCommitteeMemberCurrentStatus(String empId) throws Exception {
+	public String getCommitteeMemberCurrentStatus(Long empId) throws Exception {
 		List<Object[]> list=fundApprovalDao.getCommitteeMemberCurrentStatus(empId);
-		String memberType=null;
-		if(list!=null && list.size()>0)
+		String memberTypes = null;
+		if(list!=null && list.size() > 0)
 		{
-			memberType=list.get(0)!=null && list.get(0).length>0 && list.get(0)[1]!=null ? list.get(0)[1].toString() : null;
+			memberTypes = list.stream().map(obj -> obj[1]).filter(Objects::nonNull).map(Object::toString).distinct().collect(Collectors.joining(","));
 		}
-		return memberType;
+		return memberTypes;
 	}
 	
 	public String createSerialNo(String fbeReYear,String estimateType)

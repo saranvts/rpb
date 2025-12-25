@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
 
+import com.vts.rpb.fundapproval.service.FundApprovalService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -39,6 +40,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 	@Autowired
 	private LoginService authService;
 
+	@Autowired
+	private FundApprovalService fundApprovalService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest req,HttpServletResponse response, Authentication authentication) throws IOException
     {
@@ -71,6 +75,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 		    	      ses.setAttribute("EmployeeDivisionName", EmpDetails[6]);
 		    	      ses.setAttribute("client_name", labcode);
 		    	      ses.setAttribute("LoginTypeName", masterService.FormRoleName(login.getRpbLoginType()));
+		    	      ses.setAttribute("MemberType", fundApprovalService.getCommitteeMemberCurrentStatus(login.getEmpId()));
 
 		    		validUrl=req.getContextPath() + "/MainDashBoard.htm";
 				 }

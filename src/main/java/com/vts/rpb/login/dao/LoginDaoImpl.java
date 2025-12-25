@@ -59,16 +59,33 @@ public class LoginDaoImpl implements LoginDao
 	}
 	
 	@Override
-	public List<Object[]> getDivisionDetailsList(int RupeeValue,String FinYear,Long divisionId,String memberType,String loginType) throws Exception{
+	public List<Object[]> getDivisionDetailsList(int RupeeValue,String FinYear,Long divisionId,String memberType,String loginType, String empId, String labCode) throws Exception{
 		logger.info(new Date() +"Inside DAOImpl getDivisionDetailsList()");
 		try {
-			Query query=manager.createNativeQuery("SELECT dm.DivisionId,dm.DivisionName,COUNT(f.FundApprovalId) AS TotalCount,COUNT(CASE WHEN f.EstimateType = 'R' THEN 1 END) AS RE_Count,COUNT(CASE WHEN f.EstimateType = 'F' THEN 1 END) AS FBE_Count, ROUND(SUM(CASE  WHEN f.EstimateType = 'R' THEN IFNULL(f.Apr, 0) + IFNULL(f.May, 0) + IFNULL(f.Jun, 0) + IFNULL(f.Jul, 0) +IFNULL(f.Aug, 0) + IFNULL(f.Sep, 0) + IFNULL(f.Oct, 0) + IFNULL(f.Nov, 0) + IFNULL(f.December, 0) + IFNULL(f.Jan, 0) + IFNULL(f.Feb, 0) + IFNULL(f.Mar, 0)  ELSE 0  END) / :rupeeValue, 2) AS RE_TotalCost,ROUND(SUM(CASE  WHEN f.EstimateType = 'F' THEN IFNULL(f.Apr, 0) + IFNULL(f.May, 0) + IFNULL(f.Jun, 0) + IFNULL(f.Jul, 0) +IFNULL(f.Aug, 0) + IFNULL(f.Sep, 0) + IFNULL(f.Oct, 0) + IFNULL(f.Nov, 0) +IFNULL(f.December, 0) + IFNULL(f.Jan, 0) + IFNULL(f.Feb, 0) + IFNULL(f.Mar, 0) ELSE 0 END) / :rupeeValue, 2) AS FBE_TotalCost, dm.DivisionCode FROM "+mdmdb+".division_master dm LEFT JOIN fund_approval f ON f.DivisionId = dm.DivisionId AND f.finYear = :finYear WHERE ((:divisionId = '-1' AND (:memberType IN ('CC','CS') OR :loginType = 'A'))OR (:divisionId <> '-1' AND dm.DivisionId = :divisionId)) OR (:memberType = 'CS' AND (dm.DivisionId = :divisionId OR f.FundApprovalId IS NOT NULL)) GROUP BY dm.DivisionId, dm.DivisionName"
-					+ "");
+			Query query=manager.createNativeQuery("SELECT dm.DivisionId,dm.DivisionName,COUNT(f.FundApprovalId) AS TotalCount,\r\n"
+					+ "COUNT(CASE WHEN f.EstimateType = 'R' THEN 1 END) AS RE_Count,COUNT(CASE WHEN f.EstimateType = 'F' THEN 1 END) AS FBE_Count,\r\n"
+					+ "ROUND(SUM(CASE  WHEN f.EstimateType = 'R' THEN IFNULL(f.Apr, 0) + IFNULL(f.May, 0) + IFNULL(f.Jun, 0) + IFNULL(f.Jul, 0) +IFNULL(f.Aug, 0) + IFNULL(f.Sep, 0) + IFNULL(f.Oct, 0) +\r\n"
+					+ "IFNULL(f.Nov, 0) + IFNULL(f.December, 0) + IFNULL(f.Jan, 0) + IFNULL(f.Feb, 0) + IFNULL(f.Mar, 0)  ELSE 0  END) / :rupeeValue, 2) AS RE_TotalCost,\r\n"
+					+ "ROUND(SUM(CASE  WHEN f.EstimateType = 'F' THEN IFNULL(f.Apr, 0) + IFNULL(f.May, 0) + IFNULL(f.Jun, 0) + IFNULL(f.Jul, 0) +IFNULL(f.Aug, 0) + IFNULL(f.Sep, 0) + IFNULL(f.Oct, 0) +\r\n"
+					+ "IFNULL(f.Nov, 0) +IFNULL(f.December, 0) + IFNULL(f.Jan, 0) + IFNULL(f.Feb, 0) + IFNULL(f.Mar, 0) ELSE 0 END) / :rupeeValue, 2) AS FBE_TotalCost,\r\n"
+					+ "dm.DivisionCode \r\n"
+					+ "FROM pms_dms_dev.division_master dm \r\n"
+					+ "LEFT JOIN fund_approval f ON f.DivisionId = dm.DivisionId AND f.finYear = :finYear \r\n"
+					+ "WHERE \r\n"
+					+ "(CASE\r\n"
+					+ "	WHEN ('A' = :loginType OR :memberType IN ('CS', 'CC')) THEN 1=1\r\n"
+					+ "	WHEN 'U' = :loginType THEN dm.DivisionId IN (SELECT e.DivisionId FROM pms_dms_dev.employee e WHERE e.IsActive = '1' AND e.EmpId = :empId AND e.LabCode = :labCode)\r\n"
+					+ "	WHEN 'G' = :loginType THEN dm.DivisionId IN (SELECT di.DivisionId FROM pms_dms_dev.division_master di INNER JOIN pms_dms_dev.division_group dg ON dg.GroupId = di.GroupId AND dg.GroupHeadId = :empId AND dg.IsActive = '1' WHERE di.IsActive = '1')\r\n"
+					+ "	WHEN 'D' = :loginType THEN dm.DivisionId IN (SELECT di.DivisionId FROM pms_dms_dev.division_master di WHERE di.DivisionHeadId = :empId AND di.IsActive = '1')\r\n"
+					+ " END)\r\n"
+					+ " GROUP BY dm.DivisionId, dm.DivisionName");
 			query.setParameter("rupeeValue", RupeeValue);
 			query.setParameter("finYear", FinYear);
-			query.setParameter("divisionId", divisionId);
+			//query.setParameter("divisionId", divisionId);
 			query.setParameter("memberType", memberType);
 			query.setParameter("loginType", loginType);
+			query.setParameter("empId", empId);
+			query.setParameter("labCode", labCode);
 			List<Object[]> list=(List<Object[]>)query.getResultList();
 			return list;
 		} catch (Exception e) {
