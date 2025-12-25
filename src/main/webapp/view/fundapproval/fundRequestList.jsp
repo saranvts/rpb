@@ -1,4 +1,7 @@
 
+<%@page import="com.vts.rpb.utils.CommonActivity"%>
+<%@page import="java.util.stream.Collectors"%>
+<%@page import="java.util.stream.IntStream"%>
 <%@page import="com.vts.rpb.utils.AmountConversion"%>
 <%@page import="com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto"%>
 <%@page import="java.math.BigDecimal"%>
@@ -294,7 +297,7 @@ input[name="ItemNomenclature"]::placeholder {
 		String loginType=(String)session.getAttribute("LoginType");
 		String MemberType =(String)request.getAttribute("MemberType");
 		String currentFinYear =(String)request.getAttribute("currentFinYear");
-		System.out.println("MemberType*****"+MemberType);
+		String previousFinYear =(String)request.getAttribute("previousFinYear");
 		
 		String fromYear="",toYear="",divisionId="",estimateType="",fbeYear="",reYear="",budgetType=null,proposedProject = null,finYear = null;
 		FundApprovalBackButtonDto fundApprovalDto=(FundApprovalBackButtonDto)session.getAttribute("FundApprovalAttributes");
@@ -309,16 +312,20 @@ input[name="ItemNomenclature"]::placeholder {
 			reYear=fundApprovalDto.getREYear();
 		}
 		
-		if(MemberType == null)
-		{
-			MemberType = "NA";
-		}
-		
 		if(loginType == null)
 		{
 			loginType = "NA";
 		}
 		
+		String previousYearFundStatus="N";
+  	    String previousYearfromCY=null;
+  	    if(currentFinYear!=null){
+	  	  if(currentFinYear.equalsIgnoreCase(finYear)){ 
+		      if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){
+		    	  previousYearFundStatus="Y";
+		      }
+	  	  }
+  	    }
 		%>
 			<%String success=(String)request.getParameter("resultSuccess"); 
               String failure=(String)request.getParameter("resultFailure");%>
@@ -355,10 +362,10 @@ input[name="ItemNomenclature"]::placeholder {
 						 <div class="form-inline" style="justify-content: end;">
 				           <label style="font-weight: bold;">Division :&nbsp;&nbsp;</label>
 					            <div class="form-inline">
-								 <select class="form-control select2" id="DivisionDetails" name="DivisionDetails" data-container="body" data-live-search="true" onchange="this.form.submit();"  
+								 <select class="form-control select2" id="DivisionDetails" name="DivisionDetails" data-container="body" data-live-search="true" onchange="this.form.submit();"  <%if(previousYearFundStatus.equalsIgnoreCase("Y")){ %> disabled="disabled" <%} %>
 								  required="required"  style="align-items: center;font-size: 5px;min-width:440px;">
-								   <%if(loginType.equalsIgnoreCase("A") || MemberType.equalsIgnoreCase("CC") || MemberType.equalsIgnoreCase("CS")) {%> 
-								 	<option value="-1#All#All" <%if(divisionId!=null && (divisionId).equalsIgnoreCase("-1")){%> selected="selected" <%} %> hidden="true">All</option>
+								   <%if(loginType.equalsIgnoreCase("A") || "CC".contains(MemberType) || "CS".contains(MemberType)) {%>
+								 	<option value="-1#All#All" <%if(divisionId!=null && (divisionId).equalsIgnoreCase("-1")){%> selected="selected" <%} %>>All</option>
 								  <%} %> 								 
 									<%if(DivisionList!=null && DivisionList.size()>0){
 									for(Object[] List: DivisionList){ %>
@@ -380,6 +387,8 @@ input[name="ItemNomenclature"]::placeholder {
 						</div>  
 					</div><!-- div class header ends -->
 					
+					<%if(previousYearFundDetails==null || previousYearFundDetails.isEmpty()){ %>
+					
 					<div class="form-inline" style="width: 99%;margin: auto;">
 						<table class="table" style="width:30%;margin: auto;margin-top:4px;">
 							<tr>
@@ -400,9 +409,11 @@ input[name="ItemNomenclature"]::placeholder {
 							</tr>
 						  </table>
 					</div>
+					<%} %>
 					
 				 </form> 
 				 	
+				 	<%if(previousYearFundDetails==null || previousYearFundDetails.isEmpty()){ %>
 					<form action="#" id="RequistionFormAction" autocomplete="off"> 
 				        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 						
@@ -454,33 +465,27 @@ input[name="ItemNomenclature"]::placeholder {
 											        <i class="fa fa-eye"></i>
 											    </button>
 											</td>
-				                   			<td style="width: 200px;" align="center">
+											
+											 <% String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, data[32], data[33]);
+											 
+											 String dhStatus=null, rcStatus = null, csStatus = null, ccStatus = null, message = "", statusColor = "";
+											 if(fundStatusDetails!=null && fundStatusDetails.length > 0)
+											 {
+												 dhStatus = fundStatusDetails[0];
+												 rcStatus = fundStatusDetails[1];
+												 csStatus = fundStatusDetails[2];
+												 ccStatus = fundStatusDetails[3];
+												 message = fundStatusDetails[4];
+												 statusColor = fundStatusDetails[5];
+											 }
+						                        %>
+											
+				                   			<td style="width: 215px;" align="center">
 				                   			 
 				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
 												            
-												            <% String statusColor="",message="NA";
-												            if(fundStatus!=null) { 
-												               if("A".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "green";
-												            	   message = "Approved";
-												               } else if("N".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "#8c2303";
-												                   message = "Forward Pending";
-												               } else if("F".equalsIgnoreCase(fundStatus) &&(data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) {
-												            	   statusColor = "blue";
-												                   message = "Forwarded";
-					            							   } else if("R".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "red";
-												                   message = "Returned";
-					            							   } else if("E".equalsIgnoreCase(fundStatus)) {
-												            	   statusColor = "#007e68";
-												                   message = "Revoked";
-					            							   } else {
-					            								   message = "Reco Pending";
-												            	   statusColor = "#8c2303";
-												               }
-					            							 }
+												            <% 
 												               %>
 												               
 												           		<div class="form-inline">
@@ -503,15 +508,15 @@ input[name="ItemNomenclature"]::placeholder {
 										        
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";%>
 												
-													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[32] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[31] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
-					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1; %> 
+					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) || "CC".contains(MemberType) || "CS".contains(MemberType))) { buttonStatus = 1; %>
 					                       		
 						                       		<button type="submit" data-tooltip="Revise Item Details(s)" data-position="left" class="btn btn-sm revise-btn tooltip-container" data-toggle="tooltip"
 											        name="fundApprovalId" value=<%=data[0]%> style="padding-top: 2px; padding-bottom: 2px;" formaction="ReviseFundRequest.htm">
 											        Revision</button>
 					                       		
-					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (data[31]!=null && (data[31].toString()).equalsIgnoreCase("N"))) { buttonStatus = 1; %> 
+					                       		<%} else if("F".equalsIgnoreCase(fundStatus) && (dhStatus.equalsIgnoreCase("N"))) { buttonStatus = 1; %> 
 					                       		
 						                       		<button type="button" data-tooltip="Revoke The Request" data-position="left" class="btn btn-sm edit-icon tooltip-container" data-toggle="tooltip"
 											        name="fundApprovalIdRevoke" style="padding-top: 2px; padding-bottom: 2px;" onclick="revokeConfirm('<%=data[0]%>')">
@@ -527,16 +532,16 @@ input[name="ItemNomenclature"]::placeholder {
 											  	
 											  	<%} %>
 											  	
-											  	<%if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType))) { buttonStatus = 1; %> 
+											  	<%if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) || "CC".contains(MemberType) || "CS".contains(MemberType))) { buttonStatus = 1; %>
 					                       		
-						                       			<img id="noteSheet" onclick="window.open('NoteSheetPrint.htm?fundApprovalId=<%=data[0]%>', '_blank')" data-tooltip="Note Sheet Download" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/notesheet.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+						                       			<img id="noteSheet" onclick="window.open('NoteSheetPrint.htm?fundApprovalId=<%=data[0]%>', '_blank')" data-tooltip="Note Sheet Download" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/note-pad.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
 					                       		
 					                       		<%}%>
 											  	
 
 
 											    
-											    <%if(("N".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) ||  "CC".equalsIgnoreCase(MemberType) ||"CS".equalsIgnoreCase(MemberType)))){ buttonStatus = 1; %>
+											    <%if(("N".equalsIgnoreCase(fundStatus) || "E".equalsIgnoreCase(fundStatus)) && ((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) || ("A".equalsIgnoreCase(loginType) || "CC".contains(MemberType) || "CS".contains(MemberType)))){ buttonStatus = 1; %>
 						                       		 
 						                       		 <button type="button" data-tooltip="Delete The Request" data-position="left"
 						                       		 onclick="confirmDelete('<%=data[0]%>')" class="btn btn-sm tooltip-container"><i class="fa-solid fa-trash" style="color:#FF4C4C;"></i></button>
@@ -609,6 +614,90 @@ input[name="ItemNomenclature"]::placeholder {
 						</div>
 						
 					  </form>
+					  
+					  <%} %>
+					  
+					  <%if(previousYearFundStatus.equalsIgnoreCase("Y")){ %>
+					   
+					   <div class="dashboard-card overlayDivision">
+					   	 <div class="modal-dialog modal-lg" role="document" style="max-width: 100% !important;margin-top: 15px;margin-right: 60px; margin-left: 60px;">
+						    <div class="modal-content" style="max-width: 100% !important;width: 100% !important;">
+						      <div class="modal-header" style="background-color: white !important;color:black;">
+						        <h5 class="modal-title" style="font-family:'Times New Roman';font-weight: 600;">Fund Details<%--  <span style="color:#007a7e;font-weight: 600;margin-top:3px;">&nbsp;<%if(budgetFinYear!=null){ %>(<%=budgetFinYear %>)<%} %></span> --%></h5>
+						      </div>
+						      <div class="modal-body">
+						      <div style="font-weight: 600;color:#007a7e;font-size: 16px;text-align: center;">List of Approved Forecast Budget Estimate for <span style="font-weight: 600;color:red;"><%if(previousFinYear!=null){ %><%=previousFinYear %><%} %></span></div>
+						       <form action="FundDetailsTransfer.htm" id="FundTransferForm">
+						       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+						             
+						             <div class="table-responsive">
+						             <table class="table table-bordered" style="font-weight: 600;width: 100%;" id="fbeDetailsOfPreviousYear">
+							                   <thead>
+							                       <tr style="background-color:#edab33;color:#034189;">
+								                        <th>SN</th>
+									                    <th>Budget</th>
+									                    <th>Budget Head</th>
+									                    <th>Division</th>
+									                    <th>Initiating Officer</th>
+									                    <th>Nomenclature</th>
+									                    <th class="text-nowrap">Estimated Cost</th>
+									                    <th>Justification</th>
+							                       </tr>
+							                   </thead>
+							                   <tbody>
+							                   <%int sNo=1;
+							                   if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){
+							                     for(Object[] obj:previousYearFundDetails){%>
+							                       <tr> 
+							                         <td align="center"><%=sNo++ %>.</td>
+						                   			<td align="center">
+						                   			<input type="hidden" name="FundApprovalIdTransfer" value="<%=obj[0]%>">
+						                   			<%if(obj[7]!=null){  if(obj[28]!=null && (obj[28].toString()).equalsIgnoreCase("B")){%> General <%}else{ %> <%if(obj[29]!=null){%><%=obj[29] %><%}else{ %> - <%} %> <%} %> <%}else{ %> - <%} %></td>
+						                   			<td align="left" id="budgetHead"><%if(obj[7]!=null){ %> <%=obj[7] %><%}else{ %> - <%} %></td>
+						                   			<td align="left" ><%if(obj[26]!=null){ %> <%=obj[26] %><%if(obj[25]!=null){ %> (<%=obj[25] %>) <%} %> <%}else{ %> - <%} %></td>
+						                   			<td align="left" id="Officer"><%if(obj[20]!=null){ %> <%=obj[20].toString().trim() %><%if(obj[21]!=null){ %>, <%=obj[21] %> <%} %> <%}else{ %> - <%} %></td>
+						                   			<td id="Item"><%if(obj[16]!=null){ %> <%=obj[16] %><%}else{ %> - <%} %></td>
+						                   			<td class='tableEstimatedCost' align="right"><%if(obj[18]!=null){ %> <%=AmountConversion.amountConvertion(obj[18], "R") %><%}else{ %> - <%} %></td>
+							                        <td> <%if(obj[17]!=null){ %> <%=obj[17] %><%}else{ %> - <%} %></td>
+							                       </tr> 
+							                      
+							                       <%}}else{ %>
+							                        <tr>
+							                        	<td colspan="11" align="center" style="font-weight: 600;color:red;">No Record Found</td>
+							                        </tr>
+							                       <%} %>
+						                    </tbody>
+						                 </table> 
+						                </div>
+		                       </form>
+		                      
+		                       <%if((loginType!=null && loginType.equalsIgnoreCase("A")) || "CC".contains(MemberType) || "CS".contains(MemberType)){ %>
+		                       
+			                       <%if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){ %>
+			                       <div class="row" style="justify-content: center;"><span class="zoom-in-zoom-out" style="font-size:14px;font-weight:bold;color:#6000ff;"> 
+			                       Click Submit Button To Proceed.
+			                       </span></div>
+							       <%} %>
+							       
+							       <div class="row" style="justify-content: center;margin-top:8px;">
+							       <button type="button" class="btn btn-sm submit-btn"  onclick="SubmitFundDetailsTransfer()">Submit</button>
+							       </div>
+						       
+						       <%}else{ %>
+						       
+						       	 <%if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){ %>
+			                       <div class="row" style="justify-content: center;"><span class="zoom-in-zoom-out" style="font-size:14px;font-weight:bold;color:#6000ff;"> 
+			                       Action Pending With Approver</span></div>
+							       <%} %>
+						       
+						       <%} %>
+						       
+						      </div>
+						    </div>
+						  </div>
+					   </div>
+					   
+					   <%} %>
 					   
 		             
 				</div>
@@ -773,70 +862,6 @@ input[name="ItemNomenclature"]::placeholder {
 				  </div>
 				</div>
 		</div> 
-		
-		
-		
-	<%-- <!--Previous year Fund Details -->
-		
-		<div class="modal previousYearFundDetailsModal" tabindex="-1" role="dialog">
-				  <div class="modal-dialog modal-lg" role="document" style="max-width: 70% !important;">
-				    <div class="modal-content">
-				      <div class="modal-header">
-				        <h5 class="modal-title" style="font-family:'Times New Roman';font-weight: 600;">FBE Details</h5><span style="color:#00f6ff;font-weight: 600;margin-top:3px;">&nbsp;<%if(previousFinYear!=null){ %>(<%=previousFinYear %>)<%} %></span>
-				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				         <span aria-hidden="true" style="font-size: 25px;color:white;">&times;</span>
-				        </button>
-				      </div>
-				      <div class="modal-body">
-				       <form action="FBEDetailsTransfer.htm" id="FbeTransferForm">
-				       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-				             
-				             <div class="table-responsive">
-				             <table class="table table-bordered" style="font-weight: 600;width: 100%;" id="modalTable">
-					                   <thead>
-					                       <tr style="background-color:#edab33;color:#034189;">
-					                       <th class="text-nowrap">Project Code</th>
-					                       <th class="text-nowrap">Budget Head Description</th>
-					                       <th class="text-nowrap">Division</th>
-					                       <th class="text-nowrap">Budget Code</th>
-					                       <th class="text-nowrap">FBE Amount</th>
-					                       </tr>
-					                   </thead>
-					                   <tbody>
-					                   <%int sNo=1;
-					                   if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){
-					                     for(Object[] obj:previousYearFundDetails){%>
-					                       <tr> 
-					                         <td><input type="checkbox" class="checkbox" name="FBEMainId" value="<%=obj[0]%>"></td>
-					                         <td align="center"><%if(obj[8]!=null){%><%=obj[8] %><%}else{ %>-<%} %></td>
-					                         <td><%if(obj[6]!=null){%><%=obj[6] %><%}else{ %>-<%} %></td>
-					                         <td><%if(obj[13]!=null){%><%=obj[13] %><%}else{ %>-<%} %></td>
-					                         <td align="center"><%if(obj[9]!=null){%><%=obj[9] %><%}else{ %>-<%} %></td>
-					                         <td align="right"><%if(obj[10]!=null){%><%=AmountConversion.amountConvertion(obj[10].toString(),"R")%><%}else{ %>-<%} %></td>
-					                       </tr> 
-					                      
-					                       <%}}else{ %>
-					                        <tr>
-					                        	<td colspan="11" align="center" style="font-weight: 600;color:red;">No Record Found</td>
-					                        </tr>
-					                       <%} %>
-				                    </tbody>
-				                 </table> 
-				                </div>
-                       </form>
-                       <%if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){ %>
-                       <div class="row" style="justify-content: center;"><span class="zoom-in-zoom-out" style="font-size:14px;font-weight:bold;color:#6000ff;"> Click Submit Button To Push Items From <span style="color:red;font-size:13px;">FBE <%if(previousFinYear!=null){ %>(<%=previousFinYear %>)<%} %></span> To <span style="color:red;font-size:13px;">RE<%if(FromYear!=null && ToYear!=null){ %>(<%=FromYear %>-<%=ToYear %>)<%} %></span></span></div>
-				       <%} %>
-				      </div>
-				      <div class="modal-footer" style="justify-content: center;background-color: #f0f5ff;border-radius: 3px;">
-				        <%if(previousYearFundDetails!=null && previousYearFundDetails.size()>0){ %>
-				        	<button type="button" class="btn btn-sm submit-btn"  onclick="SubmitFBEDetailsTransfer()">Submit</button>
-				        <%} %>
-				        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" style="background-color: darkred;color:white;">Close</button>
-				      </div>
-				    </div>
-				  </div>
-				</div> --%>
 
 
 			
@@ -855,6 +880,22 @@ input[name="ItemNomenclature"]::placeholder {
 </script>
 
 <script type="text/javascript">
+
+function SubmitFundDetailsTransfer()
+{
+	
+	var form = $("#FundTransferForm");
+
+	if (form) {
+	    showConfirm('Are You Sure To Finalize The Revised Estimate List..?',
+	        function (confirmResponse) {
+	            if (confirmResponse) {
+	                form.submit();
+	            }
+	        }
+	    );
+	}
+}
 
 function revokeConfirm(fundRequestId)
 {
@@ -1024,13 +1065,13 @@ function fillDropdown(inputId, memberType, sourceList, divisionHeadId, selectedV
         var empDesig = (memberType === "DH") ? value[3] : value[4];
 
         // role filter
-        if (memberType === "DH") {
+        if (memberType.split(',').map(v => v.trim()).includes('DH')) {
             // allow all
-        } else if ((memberType === "CM" || memberType === "SE") && listMemberType !== 'CM') {
+        } else if ((memberType.split(',').map(v => v.trim()).includes('CM') || memberType.split(',').map(v => v.trim()).includes('SE')) && listMemberType !== 'CM') {
             return;
-        } else if (memberType === "CC" && (listMemberType !== 'CC' && listMemberType !== 'SC')) {
+        } else if (memberType.split(',').map(v => v.trim()).includes('CC') && (!listMemberType.split(',').map(v => v.trim()).includes('CC') && !listMemberType.split(',').map(v => v.trim()).includes('SC'))) {
             return;
-        } else if (memberType === "CS" && listMemberType !== 'CS') {
+        } else if (memberType.split(',').map(v => v.trim()).includes('CS') && !listMemberType.split(',').map(v => v.trim()).includes('CS')) {
             return;
         }
 
@@ -1521,7 +1562,7 @@ function refreshModal(modalId) {
   
   $(document).ready(function(){
 	  
-	<% if(requisitionList!=null && requisitionList.size() > 0) %>
+ <% if(requisitionList!=null && requisitionList.size() > 0) %>
 	  
 	  $("#RequisitionListTable").DataTable({
 	 "lengthMenu": [[10, 25, 50, 75, 100,-1],[10, 25, 50, 75, 100,"All"]],
