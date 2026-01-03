@@ -1053,7 +1053,7 @@ public class ReportController
 			String fundApprovalId=req.getParameter("fundApprovalId");
 		    
 			List<Object[]> NoteSheetFundDetails=reportService.getNoteSheetFundDetails(fundApprovalId);
-			List<Object[]> NoteSheetMemberDetails=reportService.getNoteSheetMemberDetails(fundApprovalId);
+			List<Object[]> NoteSheetMemberDetails=fundApprovalService.getMasterFlowDetails(fundApprovalId, "1");  // 1 is After Approval
 			String todayDate=DateTimeFormatUtil.getTodayDateInRegularFormat();
 			
 

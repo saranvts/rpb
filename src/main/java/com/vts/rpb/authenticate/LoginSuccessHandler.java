@@ -38,9 +38,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
 	private MasterService masterService;
 
 	@Autowired
-	private LoginService authService;
-
-	@Autowired
 	private FundApprovalService fundApprovalService;
 
     @Override

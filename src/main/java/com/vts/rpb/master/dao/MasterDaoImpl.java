@@ -131,8 +131,8 @@ public class MasterDaoImpl implements MasterDao {
 				    "WHERE (CASE " +
 				    "   WHEN ('A' = :logintype OR FIND_IN_SET('CS', :committeeMember) OR FIND_IN_SET('CC', :committeeMember)) THEN 1=1 " +
 				    "   WHEN 'U' = :logintype THEN d.DivisionId IN (SELECT e.DivisionId FROM " + mdmdb + ".employee e WHERE e.IsActive = '1' AND e.EmpId = :empId AND e.LabCode = :labCode) " +
-				    "   WHEN 'G' = :logintype THEN d.DivisionId IN (SELECT di.DivisionId FROM " + mdmdb + ".division_master di INNER JOIN " + mdmdb + ".division_group dg ON dg.GroupId = di.GroupId AND dg.GroupHeadId = :empId AND dg.IsActive = '1' WHERE di.IsActive = '1') " +
-				    "   WHEN 'D' = :logintype THEN d.DivisionId IN (SELECT di.DivisionId FROM " + mdmdb + ".division_master di WHERE di.DivisionHeadId = :empId AND di.IsActive = '1') " +
+				    "   WHEN 'G' = :logintype THEN d.DivisionId IN (SELECT di.DivisionId FROM " + mdmdb + ".division_master di INNER JOIN " + mdmdb + ".division_group dg ON dg.GroupId = di.GroupId AND dg.GroupHeadId = :empId AND dg.IsActive = '1' WHERE di.IsActive = '1' UNION SELECT e.DivisionId FROM "+ mdmdb +".employee e WHERE e.EmpId = :empId AND e.IsActive = '1') " +
+				    "   WHEN 'D' = :logintype THEN d.DivisionId IN (SELECT di.DivisionId FROM " + mdmdb + ".division_master di WHERE di.DivisionHeadId = :empId AND di.IsActive = '1' UNION SELECT e.DivisionId FROM "+ mdmdb +".employee e WHERE e.EmpId = :empId AND e.IsActive = '1') " +
 				    "END) " +
 				    "AND d.IsActive = '1'";
 
@@ -176,6 +176,7 @@ public class MasterDaoImpl implements MasterDao {
 	public List<Object[]> getAllOfficersList(String labCode) throws Exception {
 		logger.info(new Date() +"Inside MaterDaoImpl getAllOfficersList");
 		try {
+			System.out.println("labCode****"+labCode);
 		Query query=manager.createNativeQuery("SELECT a.EmpId, a.EmpNo, CONCAT(IFNULL(CONCAT(a.Title,' '),''), a.EmpName) AS 'EmpName' , b.Designation, a.ExtNo, a.Email, c.DivisionName, a.DesigId, a.DivisionId, a.SrNo, a.IsActive,a.LabCode,a.PunchCardNo  FROM "+mdmdb+".employee a,"+mdmdb+".employee_desig b,"+mdmdb+".division_master c WHERE a.DesigId= b.DesigId AND a.DivisionId= c.DivisionId AND a.IsActive = '1' AND a.labCode = :labCode ORDER BY a.SrNo=0,a.SrNo ");
 		query.setParameter("labCode", labCode);
 		List<Object[]> OfficerList=(List<Object[]>)query.getResultList();

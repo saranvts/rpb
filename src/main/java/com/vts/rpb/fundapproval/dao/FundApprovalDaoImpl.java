@@ -136,11 +136,12 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 
 	@Override
-	public List<Object[]> getMasterFlowDetails(long fundRequestId) throws Exception {
+	public List<Object[]> getMasterFlowDetails(long fundRequestId, String masterFlowAction) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("CALL Ibas_Fund_Master_Flow_Details(:fundRequestId)");
+			Query query= manager.createNativeQuery("CALL Ibas_Fund_Master_Flow_Details(:fundRequestId, :masterFlowAction)");
 			System.out.println("CALL Ibas_Fund_Master_Flow_Details('"+fundRequestId+"');");
 			query.setParameter("fundRequestId",fundRequestId);
+			query.setParameter("masterFlowAction",masterFlowAction);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			
@@ -239,7 +240,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	}
 
 	@Override
-	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType,long formRole) throws Exception {
+	public List<Object[]> getFundPendingList(String empId, String finYear, String memberType) throws Exception {
 		try {
 			Query query= manager.createNativeQuery("CALL Ibas_FundApprovalListAndApprovedList(:finYear,:empId,:ListType, :memberType)");
 			System.out.println("CALL Ibas_FundApprovalListAndApprovedList('"+finYear+"','"+empId+"','F', '"+memberType+"');");
@@ -247,7 +248,6 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			query.setParameter("finYear",finYear);
 			query.setParameter("ListType","F");
 			query.setParameter("memberType",memberType);
-			//query.setParameter("formRole",formRole);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
 			
@@ -863,7 +863,10 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public FundLinkedMembers getLinkedMemberDetailsByEmpId(long empId, long fundApprovalId, String memberStatus) {
 		 try {
-		        String jpql = "SELECT f FROM ibas_fund_members_linked f WHERE f.fundApprovalId = :fundApprovalId AND f.empId = :empId AND f.memberType = :memberStatus";
+			 System.out.println("empId****"+empId);
+			 System.out.println("fundApprovalId****"+fundApprovalId);
+			 System.out.println("memberStatus****"+memberStatus);
+		        String jpql = "SELECT f FROM ibas_fund_members_linked f WHERE f.fundApprovalId = :fundApprovalId AND f.empId = :empId AND (f.memberType = :memberStatus OR (f.memberType = 'SE' AND :memberStatus = 'CM'))";
 		        return manager.createQuery(jpql, FundLinkedMembers.class)
 		                      .setParameter("empId", empId)
 		                      .setParameter("fundApprovalId", fundApprovalId)

@@ -23,7 +23,7 @@ public interface FundApprovalService
 	
 	public long RevisionFundRequestSubmit(FundApproval approved, FundApprovalAttachDto attachDto) throws Exception;
 
-	public List<Object[]> getMasterFlowDetails(String fundRequestId) throws Exception;
+	public List<Object[]> getMasterFlowDetails(String fundRequestId, String masterFlowAction) throws Exception;
 	
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception;
 	
@@ -37,7 +37,7 @@ public interface FundApprovalService
 
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception;
 
-	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType,long formRole) throws Exception;
+	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType) throws Exception;
 
 	public List<Object[]> getFundApprovedList(String empId, String finYear,String loginType) throws Exception;
 

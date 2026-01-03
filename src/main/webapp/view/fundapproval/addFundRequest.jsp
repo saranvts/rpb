@@ -388,6 +388,11 @@ tr:last-of-type th:last-of-type {
      Object[] FundRequestObj = (Object[])request.getAttribute("FundRequestObj");
      String filesize=  (String)request.getAttribute("filesize");
      List<Object[]> AttachList = (List<Object[]>)request.getAttribute("attachList");
+
+     if(rpbMemberType == null)
+     {
+        rpbMemberType = "NA";
+     }
      
      if(action == null)
      {
@@ -585,7 +590,7 @@ tr:last-of-type th:last-of-type {
 						    
 						    <div class="form-inline">
 						    
-						    <%if("CC".equalsIgnoreCase(rpbMemberType) || "CS".equalsIgnoreCase(rpbMemberType) || "SC".equalsIgnoreCase(rpbMemberType)  || "A".equalsIgnoreCase(logintype)) {%>
+						    <%if("CC".contains(rpbMemberType) || "CS".contains(rpbMemberType) || "SC".contains(rpbMemberType)  || "A".equalsIgnoreCase(logintype)) {%>
 					           <input type="checkbox" class="tooltip-container" id="AllOfficers" name="AllOfficers" data-tooltip="check the box to get all employee(s)" data-position="top">&nbsp;
 					           <%} %>
                        <select name="OfficerCode" id="OfficerCode" class="form-control officerCode select2"
@@ -695,12 +700,14 @@ tr:last-of-type th:last-of-type {
 				    </td>
 				    <% if (justAttach != null) { %>
 				    <td>
+				    <div class="row" style="justify-content: center;">
 				        <button type="button" class="btn" onclick="downloadFile('<%= justAttach[0] %>')" title="<%= justAttach[2] %>">
 				            <i class="fa fa-download" style="color: green;"></i>
 				        </button>
 				        <button type="button" class="btn" onclick="deleteFile('<%= justAttach[0] %>')" title="Delete File">
 				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
 				        </button>
+				     </div>
 				    </td>
 				    <% } else { %>
 				    
@@ -724,12 +731,14 @@ tr:last-of-type th:last-of-type {
 				    </td>
 				    <% if (costAttach != null) { %>
 				    <td>
+				    <div class="row" style="justify-content: center;">
 				        <button type="button" class="btn" onclick="downloadFile('<%= costAttach[0] %>')" title="<%= costAttach[2] %>">
 				            <i class="fa fa-download" style="color: green;"></i>
 				        </button>
 				        <button type="button" class="btn" onclick="deleteFile('<%= costAttach[0] %>')" title="Delete File">
 				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
 				        </button>
+				      </div>
 				    </td>
 				    <% } else { %>
 				    
@@ -753,12 +762,14 @@ tr:last-of-type th:last-of-type {
 				    </td>
 				    <% if (bqsAttach != null) { %>
 				    <td>
+				    <div class="row" style="justify-content: center;">
 				        <button type="button" class="btn" onclick="downloadFile('<%= bqsAttach[0] %>')" title="<%= bqsAttach[2] %>">
 				            <i class="fa fa-download" style="color: green;"></i>
 				        </button>
 				        <button type="button" class="btn" onclick="deleteFile('<%= bqsAttach[0] %>')" title="Delete File">
 				            <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
 				        </button>
+				      </div>
 				    </td>
 				    <% } else { %>
 				    
@@ -795,12 +806,14 @@ tr:last-of-type th:last-of-type {
             <input type="hidden" name="existingFileName" value="<%= dynamicAttach[1] %>">
         </td>
         <td>
+        <div class= "row" style="justify-content: center;">
             <button type="button" class="btn" onclick="downloadFile('<%= dynamicAttach[0] %>')" title="<%= dynamicAttach[2] %>">
                 <i class="fa fa-download" style="color: green;"></i>
             </button>
             <button type="button" class="btn" onclick="deleteFile('<%= dynamicAttach[0] %>')" title="Delete File">
                 <i class="fa fa-trash" style="color: red; font-size: 18px;"></i>
             </button>
+         </div>
         </td>
         <% } else { %>
         <td>
@@ -912,7 +925,7 @@ tr:last-of-type th:last-of-type {
          		}
 	         	else
          		{
-	         		initiatingSelect.append('<option value="-1">No Employee Found</option>');
+	         		initiatingSelect.append('<option value="">No Employee Found</option>');
          		}
 	              
 	              initiatingSelect.select2();
@@ -938,68 +951,61 @@ tr:last-of-type th:last-of-type {
   });
 
 $("#AllOfficers").click(function(){
+    var $officerSelect = $(".officerCode"); // Cache for performance
+    $officerSelect.find('option').remove();
 
-	$('.officerCode').find('option').remove();
-	var fbeItemEmployee=$("#fbeItemEmployee").val();
-	var Checkbox=$('input[name="AllOfficers"]:checked');
-	if(Checkbox!=null && Checkbox.length>0)
-		{
-			$.get('SelectAllemployeeAjax.htm', {
-			}, function(responseJson) {
-	
-					var result = JSON.parse(responseJson);
-					if(result.length>0){
-						$(".officerCode").append('<option value="" disabled>Select Employee</option>'); // Add default option
-						$.each(result, function(key, value) {
-							if(fbeItemEmployee!=null && fbeItemEmployee==value[0])
-							{
-								$(".officerCode").append('<option selected value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
-							}
-							else
-								{
-									$(".officerCode").append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
-								}
-						});
-					}else{
-						$(".officerCode").append("<option value=''>No Officer </option>");
-					}
-			});
-        }
-	else
-		{
-				//var DivisionDetails= $("select#divisionCode").val();
-				var DivisionDetails=$("#divisionCode").val();
-				if(DivisionDetails!=null && DivisionDetails!=0){
-				var arr=DivisionDetails.split("#");
-				var divisionId=arr[0];
-				$.get('SelectEmployee.htm', {
-					DivisionId : divisionId
-				}, function(responseJson) {
-					
-					var result = JSON.parse(responseJson);
-					if(result.length>0){
-						$.each(result, function(key, value) {
-						
-							if(fbeItemEmployee!=null && fbeItemEmployee==value.empId)
-							{
-								$(".officerCode").append('<option selected value="'+value.officerCode+'">'+ value.officerName + ', '+ value.officerDesig +'</option>');
-							}
-							else
-								{
-									$(".officerCode").append('<option value="'+value.officerCode+'">'+ value.officerName + ', '+ value.officerDesig +'</option>');
-								}
-						});
-					}else{
-						$(".officerCode").append("<option value=''>No Officer </option>");
-					}
-				 });
-		        }
-				else
-				{
-					$(".officerCode").append("<option value=''>Select Officer </option>");
-		        }
-		}
-	});
+    var fbeItemEmployee = $("#fbeItemEmployee").val();
+    var isChecked = $(this).is(':checked'); // More standard than the Checkbox.length check
+
+    if(isChecked) {
+        $.get('SelectAllemployeeAjax.htm', {}, function(responseJson) {
+            var result = JSON.parse(responseJson);
+            if(result.length > 0){
+                $officerSelect.append('<option value="" disabled>Select Employee</option>');
+                $.each(result, function(key, value) {
+                    if(fbeItemEmployee != null && fbeItemEmployee == value[0]) {
+                        $officerSelect.append('<option selected value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
+                    } else {
+                        $officerSelect.append('<option value="'+value[0]+'">'+ value[2] + ', '+ value[3] +'</option>');
+                    }
+                });
+            } else {
+                $officerSelect.append('<option value="">No Employee Found</option>');
+            }
+            $officerSelect.trigger('change'); // Needed for Select2 to show the new options
+        });
+    } else {
+        var divisionId = $("#divisionId").val();
+        $.ajax({
+            url: 'GetUserNameListByDivisionId.htm',
+            method: 'GET',
+            data: { DivisionId: divisionId },
+            dataType: 'json',
+            success: function(newList) {
+                $officerSelect.empty();
+                $officerSelect.append('<option value="" disabled>Select Employee</option>');
+
+                if(newList != null && newList.length > 0) {
+                    $.each(newList, function(index, obj) {
+                        const option = $('<option></option>').val(obj[0]).text(obj[6]).addClass('option-class');
+
+                        // Ensure Action and selectedEmpId exist before checking
+                        if (typeof Action !== 'undefined' && (Action === "Edit" || Action === "Revise")) {
+                            if (typeof selectedEmpId !== 'undefined' && selectedEmpId == obj[0]) {
+                                // matchedStatus='Y'; // Ensure this variable is declared elsewhere
+                                option.prop('selected', true);
+                            }
+                        }
+                        $officerSelect.append(option);
+                    });
+                } else {
+                    $officerSelect.append('<option value="">No Employee Found</option>');
+                }
+                $officerSelect.select2();
+            }
+        });
+    }
+});
 </script>
 
 
@@ -1312,7 +1318,7 @@ function validateFormFields() {
         return false;
     }
 
-    const officerSelect = document.getElementById("OfficerCodeVal");
+    const officerSelect = document.getElementById("OfficerCode");
     const allOfficersCheckbox = document.getElementById("AllOfficers");
     if (officerSelect && (!officerSelect || !officerSelect.checked)) {
         if (officerSelect.value.trim() === "") {
@@ -1381,7 +1387,7 @@ function validateFormFieldsEdit() {
         return false;
     }
 
-    const officerSelect = document.getElementById("OfficerCodeVal");
+    const officerSelect = document.getElementById("OfficerCode");
     const allOfficersCheckbox = document.getElementById("AllOfficers");
     if (officerSelect && (!officerSelect || !officerSelect.checked)) {
         if (officerSelect.value.trim() === "") {
@@ -1444,7 +1450,7 @@ function validateFormFieldsRevise() {
         return false;
     }
 
-    const officerSelect = document.getElementById("OfficerCodeVal");
+    const officerSelect = document.getElementById("OfficerCode");
     const allOfficersCheckbox = document.getElementById("AllOfficers");
     if (officerSelect && (!officerSelect || !officerSelect.checked)) {
         if (officerSelect.value.trim() === "") {

@@ -307,8 +307,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 	
 	@Override
-	public List<Object[]> getMasterFlowDetails(String fundRequestId) throws Exception {
-		return fundApprovalDao.getMasterFlowDetails(fundRequestId!=null ? Long.parseLong(fundRequestId) : 0);
+	public List<Object[]> getMasterFlowDetails(String fundRequestId, String masterFlowAction) throws Exception {
+		return fundApprovalDao.getMasterFlowDetails(fundRequestId!=null ? Long.parseLong(fundRequestId) : 0, masterFlowAction);
 	}
 	
 	@Override
@@ -514,8 +514,8 @@ public class FundApprovalServiceImpl implements FundApprovalService
 	}
 
 	@Override
-	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType,long formRole) throws Exception {
-		return fundApprovalDao.getFundPendingList(empId,finYear,memberType,formRole);
+	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType) throws Exception {
+		return fundApprovalDao.getFundPendingList(empId,finYear,memberType);
 	}
 
 	@Override
@@ -1125,7 +1125,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 					{
 						FundLinkedMembers modal = fundApprovalDao.getCommitteeMemberLinkedDetails(linkedMemberId);
 						modal.setEmpId(Long.parseLong(linkedEmpId));
-						
+
 						String skippStatus = getSkippedStatusDetails(fundDto.getSkippedStatus(), i);
 						
 						modal.setIsSkipped(skippStatus);

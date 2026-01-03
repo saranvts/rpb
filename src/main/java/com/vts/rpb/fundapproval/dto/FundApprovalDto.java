@@ -56,6 +56,7 @@ public class FundApprovalDto {
 	private String memberStatus;
 	private String flowDetailsId;
 	private String flowMasterId;
-	
+	private String particularMemberType;
+
 	
 }

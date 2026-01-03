@@ -168,38 +168,49 @@
 </head>
 <body>
 <%
-List<Object[]> approvalPendingList=(List<Object[]>)request.getAttribute("ApprovalPendingList");
-List<Object[]> approvedList=(List<Object[]>)request.getAttribute("ApprovalList");
+Map<String, List<Object[]>> approvalPendingMap =(Map<String, List<Object[]>>)request.getAttribute("ApprovalPendingList");
+Map<String, List<Object[]>> approvedMap =(Map<String, List<Object[]>>)request.getAttribute("ApprovalList");
 String fromYear=(String)request.getAttribute("FromYear");
 String toYear=(String)request.getAttribute("ToYear");
 String fundListApprovedOrNot=(String)request.getAttribute("FundListApprovedOrNot");
 String DivisionDetails=(String)request.getAttribute("DivisionDetails");
 String redirectedvalue=(String)request.getAttribute("redirectedvalueForward");
-System.out.println("redirectedvalue***"+redirectedvalue);
-String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
-if(currentEmpStatus == null)
-{
-	currentEmpStatus = "NA";
-}
+String memberType=(String)request.getAttribute("memberType");
 %>
 
-<%String success=(String)request.getParameter("resultSuccess"); 
+<% Map<String, String> roleNamesApproval = new HashMap<>();
+       roleNamesApproval.put("DH", "Division Head Recommendation");
+       roleNamesApproval.put("CM", "Committee Member Recommendation");
+       roleNamesApproval.put("SE", "Subject Expert Recommendation");
+       roleNamesApproval.put("CS", "Committee Secretary Noting");
+       roleNamesApproval.put("CC", "Committee Chairman Approval");
+       roleNamesApproval.put("SC", "Standby Chairman Approval"); %>
+
+<% Map<String, String> roleNamesApproved = new HashMap<>();
+       roleNamesApproved.put("DH", "Division Head Recommended");
+       roleNamesApproved.put("CM", "Committee Member Recommended");
+       roleNamesApproved.put("SE", "Subject Expert Recommended");
+       roleNamesApproved.put("CS", "Committee Secretary Noted");
+       roleNamesApproved.put("CC", "Committee Chairman Approved");
+       roleNamesApproved.put("SC", "Standby Chairman Approved"); %>
+
+<%String success=(String)request.getParameter("resultSuccess");
 String failure=(String)request.getParameter("resultFailure");%>
 
 
-<div class="card-header page-top"> 
+<div class="card-header page-top">
 	<div class="row">
-	 	<div class="col-md-3"><h5><% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommend
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+	 	<div class="col-md-3"><h5><% if(memberType.contains("CC") || memberType.contains("SC")){ %> Approval
+									         <%}else if(memberType.contains("CM") || memberType.contains("DH") || memberType.contains("SE")){ %> Recommend
+									         <%}else if(memberType.contains("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %> List</h5></div>
 	      <div class="col-md-9">
 	    	 <ol class="breadcrumb" style="justify-content: right;">
 	    	 <li class="breadcrumb-item"><a href="MainDashBoard.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i> Home </a></li>
 	              <li class="breadcrumb-item active" aria-current="page">
-	              <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommend
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+	              <% if(memberType.contains("CC") || memberType.contains("SC")){ %> Approval
+									         <%}else if(memberType.contains("CM") || memberType.contains("DH") || memberType.contains("SE")){ %> Recommend
+									         <%}else if(memberType.contains("CS")){ %> Noting
 									         <%}else{ %> Recommend<%} %> List</li>
              </ol>
           </div>
@@ -211,8 +222,8 @@ String failure=(String)request.getParameter("resultFailure");%>
 <div class="page card dashboard-card"> <!-- Page Start -->
 
     <%
-    String Status=(String)request.getParameter("Status"); 
-    String result1=(String)request.getParameter("Failure"); 
+    String Status=(String)request.getParameter("Status");
+    String result1=(String)request.getParameter("Failure");
 	   if(Status!=null){
 	%>
 	      <div align="center">
@@ -229,300 +240,216 @@ String failure=(String)request.getParameter("resultFailure");%>
 			 </div>
 		</div>
 	<%} %>
-	
-	
+
+
 	<div class="card-body"><!-- Body Part Start -->
-	
-				
-		<form action="FundApprovalList.htm" method="POST" autocomplete="off"> 
+
+
+		<form action="FundApprovalList.htm" method="POST" autocomplete="off">
 			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 				  <div class="flex-container" style="border-radius: 3px;height: auto !important;padding: 8px;justify-content: flex-end;border-bottom-right-radius: 0px !important;">
 					<div class="form-inline" style="justify-content: end;">
-				           
+
 
 							   &nbsp;&nbsp;&nbsp;&nbsp;
 						<div class="form-inline" style="">
-							 <label id="fromLabel" style="font-weight: bold;">From:&nbsp;&nbsp;&nbsp;</label> 			
-								 <input type="text" style="width: 100px; background-color:white;"  class="form-control"  id="FromYear" onchange="this.form.submit()" <%if(fromYear!=null){%> value="<%=fromYear%>" <%}%> name="FromYear"  required="required" readonly="readonly"> 
+							 <label id="fromLabel" style="font-weight: bold;">From:&nbsp;&nbsp;&nbsp;</label>
+								 <input type="text" style="width: 100px; background-color:white;"  class="form-control"  id="FromYear" onchange="this.form.submit()" <%if(fromYear!=null){%> value="<%=fromYear%>" <%}%> name="FromYear"  required="required" readonly="readonly">
 					    </div>
-							   &nbsp;&nbsp;&nbsp;&nbsp;	
+							   &nbsp;&nbsp;&nbsp;&nbsp;
 						<div class="form-inline" style="">
 							 <label id="toLabel" style="font-weight: bold;">&nbsp;&nbsp;&nbsp;To:&nbsp;&nbsp;&nbsp;</label>
-					              <input type="text" style="width: 100px; background-color:white;" class="form-control" id="ToYear"   <%if(toYear!=null){%>value="<%=toYear%>" <%}%>   name="ToYear"  required="required"  readonly="readonly" > 							
+					              <input type="text" style="width: 100px; background-color:white;" class="form-control" id="ToYear"   <%if(toYear!=null){%>value="<%=toYear%>" <%}%>   name="ToYear"  required="required"  readonly="readonly" >
 						</div>
-					</div>  
+					</div>
 				</div>
-		</form> 
-		
+		</form>
+
 		<div class="tabs-container" style="margin-top:7px;">
 		    <input type="radio" name="tabs" id="tab-pending">
-		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommend
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Review
+		    <label for="tab-pending" style="margin-bottom:0px !important;">Fund <% if(memberType.contains("CC") || memberType.contains("SC")){ %> Approval
+									         <%}else if(memberType.contains("CM") || memberType.contains("DH") || memberType.contains("SE")){ %> Recommend
+									         <%}else if(memberType.contains("CS")){ %> Review
 									         <%}else{ %> NA <%} %> Pending</label>
 		    <input type="radio" name="tabs" id="tab-approved">
-		    <label for="tab-approved" style="margin-bottom:0px !important;">Fund <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approved 
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("SE")){ %> Recommended
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noted
+		    <label for="tab-approved" style="margin-bottom:0px !important;">Fund <% if(memberType.contains("CC") || memberType.contains("SC")){ %> Approved
+									         <%}else if(memberType.contains("CM") || memberType.contains("DH") || memberType.contains("SE")){ %> Recommended
+									         <%}else if(memberType.contains("CS")){ %> Noted
 									         <%}else{ %> NA <%} %></label>
 		<span style="font-weight: 600;color: #843daf;">&nbsp;&nbsp;&nbsp;  RE - Revised Estimate / FBE - Forecast Budget Estimate</span>
-		
+
 		    <div class="tab-content card">
-		      <section id="panel-pending" class="tab-panel">
-		      	<div class="table-responsive" style="margin-top: 0.5rem;font-weight: 600;"> 
-					<table class="table table-bordered" id="pending">  <!--Pending List Table Start -->
-						 <thead>
-			                <tr>
-			                    <th>SN</th>
-			                    <th style="width: 12%;" class="text-nowrap">Estimate Type</th> 
-			                    <th>Division</th>
-			                    <th class="text-nowrap">Budget Head</th>
-			                    <th class="text-nowrap">Nomenclature</th>
-			                    <th class="text-nowrap">Item Cost</th>
-			                    <th class="text-nowrap">View</th>
-			                    <th>Status</th>
-			                    <th style="width: 10%;" class="text-nowrap">Action</th>
-			                </tr>
-						 </thead>
-						 <tbody>
-							<%
-							  int sn=1; 
-							  if (approvalPendingList != null && approvalPendingList.size() != 0) { 
-								      for (Object[] obj : approvalPendingList) {
-								      String isTempDH = null;
-								       if(obj[23] != null)
-                                       {
-                                            isTempDH = obj[23].toString();
-                                       }
-						    %>
-			                 <tr <% if(isTempDH!=null && isTempDH.equalsIgnoreCase("Y")) { %> style="background-color: #c0ffeb;" <% } %> >
-			                     <td align="center"><%=sn++ %>.</td>
-			                     <% if(obj[1]!=null && obj[1].toString().equalsIgnoreCase("R")){%>
-			                     <td align="center" style="width: 12%;">RE</td>
-			                     <%}else{ %>
-			                     <td align="center" style="width: 12%;">FBE</td>
-			                     <% }%>
-			                     <td align="left"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
-			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
-			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
-			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
-			                      <td align="center">
-											    <button type="button" 
-											            class="btn btn-sm btn-outline-primary tooltip-container" 
-											            onclick="openFundDetailsModal('<%=obj[0] %>', this)" 
-											            data-tooltip="Fund Request Details and Attachment(s)" data-position="top">
-											        <i class="fa fa-eye"></i>
-											    </button>
-											</td>
-			                     
-			                     <%String fundStatus=obj[19]==null ? "NaN" : obj[19].toString(); %>
-			                     
-			                       <% String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, obj[20], obj[22]);
-											 
-											 String dhStatus=null, rcStatus = null, csStatus = null, ccStatus = null, message = "", statusColor = "";
-											 if(fundStatusDetails!=null && fundStatusDetails.length > 0)
-											 {
-												 dhStatus = fundStatusDetails[0];
-												 rcStatus = fundStatusDetails[1];
-												 csStatus = fundStatusDetails[2];
-												 ccStatus = fundStatusDetails[3];
-												 message = fundStatusDetails[4];
-												 statusColor = fundStatusDetails[5];
-											 }
-						                        %>
-									       <td style="width: 215px;" align="center">
-				                   			 
-		                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
-										            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-										           		<div class="form-inline">
-										           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
-										            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
-										           		</div>
-										             
-									       </button>
-											       
-									       </td>
-			                     
-			                     
-			                     <td align="center">
-			                     
-			                        <%
-									   String action = "";
-									   String tooltip = "";
-									   boolean showPending = false;
-                                        if(isTempDH!=null && isTempDH.equalsIgnoreCase("Y"))
-                                        {
-                                            currentEmpStatus = currentEmpStatus + "-" + isTempDH;
-                                        }
 
-									   switch(currentEmpStatus.toUpperCase()) {
-									       case "DH":
-									    	   showPending = dhStatus.equalsIgnoreCase("Y");
-									           action = "Recommend";
-									           tooltip = "Preview & Recommend";
-									           break;
-									       case "CM":
-									       case "SE":
-									           showPending = !dhStatus.equalsIgnoreCase("Y");
-									           action = "Recommend";
-									           tooltip = "Preview & Recommend";
-									           break;
-									       case "CS":
-									           showPending = false;
-									           action = "Noting";
-									           tooltip = "Preview & Note";
-									           break;
-									       case "CC":
-									           showPending = false;
-									           action = "Approval";
-									           tooltip = "Preview & Approve";
-									           break;
+              <section id="panel-pending" class="tab-panel">
+                  <%
+                    boolean hasPendingData = false; // Flag to check if any role has data
+                    if (approvalPendingMap != null && !approvalPendingMap.isEmpty()) {
+                       int sn = 1;
+                       for (Map.Entry<String, List<Object[]>> entry : approvalPendingMap.entrySet()) {
+                           List<Object[]> roleList = entry.getValue();
 
-                                           case "CM-Y":
-                                           case "SE-Y":
-                                           case "CS-Y":
-                                           case "CC-Y":
-                                               showPending = false;
-                                               action = "Recommend";
-                                               tooltip = "Preview & Recommend";
-                                               break;
-									   }
-									%>
-			                        
-			                        <% if(showPending) { %>
-									   <span style="color:#783d00; border-radius:10px; padding:2px 9px; background:#ffe8cc; font-size:11px; font-weight:800;">
-									       Recommendation Pending
-									   </span>
-									<% } else if(!action.isEmpty()) { %>
-									   <form action="#" method="POST" style="display:inline">
-									       <button type="submit"
-									               data-tooltip="<%= tooltip %>"
-									               data-position="top"
-									               class="btn btn-sm icon-btn tooltip-container"
-									               style="padding:6px;border:1px solid #05814d;background:#d3ffe5;"
-									               formaction="FundApprovalPreview.htm">
-									           <%= action %> &nbsp;&#10097;&#10097;
-									       </button>
-									       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-									       <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
-									       <input type="hidden" name="approvalRoleForDH" value="<%= obj[23] %>">
-									   </form>
-									<% } %>
-			                          
-			                     </td>  
-			                 </tr>
-						    <% 
-							  }} else { 
-							%>
-			                <tr>
-			                    <td colspan="8">
-			                        <div class="text-danger" style="text-align:center">
-			                            <h6 style="font-weight: 600;">No Pending Found</h6>
-			                        </div>
-			                    </td>
-			                </tr>
-						  <% } %>		                
-						</tbody>
-				  </table><!--Pending List Table End -->
-				</div>
-		      
-		      </section>
-		
-		      <section id="panel-approved" class="tab-panel">
-		      <div class="table-responsive" style="margin-top: 0.5rem;font-weight: 600;"> 
-					<table class="table table-bordered" id="Approval">  <!--Pending List Table Start -->
-						 <thead>
-			                <tr>
-			                    <th>SN</th>
-			                    <th style="width: 12%;" class="text-nowrap">Estimate Type</th> 
-			                    <th>Division</th>
-			                    <th class="text-nowrap">Budget Head</th>
-			                    <th class="text-nowrap">Item Nomenclature</th>
-			                    <th class="text-nowrap">Item Cost</th>
-			                    <th class="text-nowrap">View</th>
-			                    <th style="width: 15%;">Status</th>
-			                </tr>
-						 </thead>
-						 <tbody>
-							<%
-							  int sN=1; 
-							  if (approvedList != null && approvedList.size() != 0) { 
-								      for (Object[] obj : approvedList) {
-								       String isTempDH = null;
-                                       if(obj[23] != null)
-                                         {
-                                              isTempDH = obj[23].toString();
-                                         }
-						    %>
-			                 <tr <% if(isTempDH!=null && isTempDH.equalsIgnoreCase("Y")) { %> style="background-color: #c0ffeb;" <% } %>>
-			                     <td align="center"><%=sN++ %>.</td>
-			                     <% if(obj[1]!=null && obj[1].toString().equalsIgnoreCase("R")){%>
-			                     <td align="center" style="width: 12%;">RE</td>
-			                     <%}else{ %>
-			                     <td align="center" style="width: 12%;">FBE</td>
-			                     <% }%>
-			                     <td align="left"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
-			                     <td align="left"><% if(obj[8]!=null){%> <%=obj[8] %> <%}else{ %> - <%} %></td>
-			                     <td align="left"><% if(obj[14]!=null){%> <%=obj[14] %> <%}else{ %> - <%} %></td>
-			                     <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
-			                      <td align="center">
-											    <button type="button" 
-											            class="btn btn-sm btn-outline-primary tooltip-container" 
-											            onclick="openFundDetailsModal('<%=obj[0] %>', this)" 
-											            data-tooltip="Fund Request Details and Attachment(s)" data-position="top">
-											        <i class="fa fa-eye"></i>
-											    </button>
-											</td>
-			                     
-			                   
-			                     <%String fundStatus=obj[19]==null ? "NaN" : obj[19].toString(); %>
-			                     
-			                       <% String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, obj[20], obj[22]);
-											 
-											 String dhStatus=null, rcStatus = null, csStatus = null, ccStatus = null, message = "", statusColor = "";
-											 if(fundStatusDetails!=null && fundStatusDetails.length > 0)
-											 {
-												 dhStatus = fundStatusDetails[0];
-												 rcStatus = fundStatusDetails[1];
-												 csStatus = fundStatusDetails[2];
-												 ccStatus = fundStatusDetails[3];
-												 message = fundStatusDetails[4];
-												 statusColor = fundStatusDetails[5];
-											 }
-						                        %>
-									       
-									       <td style="width: 215px;" align="center">
-				                   			 
-		                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
-										            onclick="openApprovalStatusAjax('<%=obj[0]%>')">
-										            
-										               
-										           		<div class="form-inline">
-										           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
-										            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
-										           		</div>
-										             
-									       </button>
-											       
-									       </td>
-									       
-			                 </tr>
-						    <% 
-							  }} else { 
-							%>
-			                <tr>
-			                    <td colspan="8">
-			                        <div class="text-danger" style="text-align:center">
-			                            <h6 style="font-weight: 600;">No Record Found</h6>
-			                        </div>
-			                    </td>
-			                </tr>
-						  <% } %>		                
-						</tbody>
-				  </table><!--Pending List Table End -->
-				</div>
-		       
-		      </section>
+                           if (roleList != null && !roleList.isEmpty()) {
+                               hasPendingData = true; // At least one table will be shown
+                  %>
+                               <div style="margin-top: 15px; margin-bottom: 12px;">
+                                   <span class="badge badge-primary" style="font-size: 14px;padding: 10px 10px !important;"><%= roleNamesApproval.getOrDefault(entry.getKey(), entry.getKey()) %></span>
+                               </div>
+
+                               <div class="table-responsive" style="margin-top: 0.5rem; font-weight: 600;">
+                                   <table class="table table-bordered" id="pending_<%= entry.getKey() %>">
+                                       <thead>
+                                           <tr>
+                                               <th>SN</th>
+                                               <th style="width: 12%;" class="text-nowrap">Estimate Type</th>
+                                               <th>Division</th>
+                                               <th class="text-nowrap">Budget Head</th>
+                                               <th class="text-nowrap">Nomenclature</th>
+                                               <th class="text-nowrap">Item Cost</th>
+                                               <th class="text-nowrap">View</th>
+                                               <th>Status</th>
+                                               <th style="width: 10%;" class="text-nowrap">Action</th>
+                                           </tr>
+                                       </thead>
+                                       <tbody>
+                                       <% for (Object[] obj : roleList) { %>
+                                           <tr>
+                                               <td align="center"><%=sn++ %>.</td>
+                                               <td align="center" style="width: 12%;"><%= (obj[1]!=null && obj[1].toString().equalsIgnoreCase("R")) ? "RE" : "FBE" %></td>
+                                               <td align="left"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
+                                               <td align="left"><%= (obj[8]!=null) ? obj[8] : "-" %></td>
+                                               <td align="left"><%= (obj[14]!=null) ? obj[14] : "-" %></td>
+                                               <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
+                                               <td align="center">
+                                                   <button type="button" class="btn btn-sm btn-outline-primary tooltip-container" onclick="openFundDetailsModal('<%=obj[0] %>', this)" data-tooltip="Fund Request Details and Attachment(s)" data-position="top">
+                                                       <i class="fa fa-eye"></i>
+                                                   </button>
+                                               </td>
+                                               <%
+                                                   String fundStatus = obj[19] == null ? "NaN" : obj[19].toString();
+                                                   String[] fundStatusDetails = CommonActivity.getFundNextStatus(fundStatus, obj[20], obj[22]);
+                                                   String dhStatus = fundStatusDetails[0], message = fundStatusDetails[4], statusColor = fundStatusDetails[5];
+                                               %>
+                                               <td style="width: 215px;" align="center">
+                                                   <button type="button" class="btn btn-sm w-100 btn-status greek-style" onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+                                                       <div class="form-inline">
+                                                           <span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
+                                                           <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
+                                                       </div>
+                                                   </button>
+                                               </td>
+                                               <td align="center">
+                                               <%
+                                                   String action = ""; String tooltip = ""; boolean showPending = false;
+                                                   String roleKey = entry.getKey().toUpperCase();
+                                                   switch(roleKey) {
+                                                       case "DH": showPending = (dhStatus != null && dhStatus.equalsIgnoreCase("Y")); action = "Recommend"; tooltip = "Preview & Recommend"; break;
+                                                       case "CM": case "SE": showPending = (dhStatus != null && !dhStatus.equalsIgnoreCase("Y")); action = "Recommend"; tooltip = "Preview & Recommend"; break;
+                                                       case "CS": action = "Noting"; tooltip = "Preview & Note"; break;
+                                                       case "CC": action = "Approval"; tooltip = "Preview & Approve"; break;
+                                                       case "SC": action = "Approval"; tooltip = "Preview & Approve"; break;
+                                                       case "CM-Y": case "SE-Y": case "CS-Y": case "CC-Y": action = "Recommend"; tooltip = "Preview & Recommend"; break;
+                                                   }
+                                               %>
+                                               <% if(showPending) { %>
+                                                   <span style="color:#783d00; border-radius:10px; padding:2px 9px; background:#ffe8cc; font-size:11px; font-weight:800;">Recommendation Pending</span>
+                                               <% } else if(!action.isEmpty()) { %>
+                                                   <form action="#" method="POST" style="display:inline">
+                                                       <button type="submit" data-tooltip="<%= tooltip %>" class="btn btn-sm icon-btn tooltip-container" style="padding:6px;border:1px solid #05814d;background:#d3ffe5;" formaction="FundApprovalPreview.htm">
+                                                           <%= action %> &nbsp;&#10097;&#10097;
+                                                       </button>
+                                                       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                                                       <input type="hidden" name="FundApprovalIdSubmit" value="<%= obj[0] %>">
+                                                       <input type="hidden" name="ParticularMemberType" value="<%= roleKey %>">
+                                                   </form>
+                                               <% } %>
+                                               </td>
+                                           </tr>
+                                       <% } %>
+                                       </tbody>
+                                   </table>
+                               </div>
+                  <%
+                           }
+                       }
+                    }
+
+                    // If Map was null, or Map was empty, or Map had keys but all Lists were empty
+                    if (!hasPendingData) {
+                  %>
+                      <div class="text-danger" style="text-align:center; padding: 20px;font-weight: 600;">No Pending Found</div>
+                 <% } %>
+              </section>
+
+             <section id="panel-approved" class="tab-panel">
+                 <%
+                   boolean hasApprovedData = false;
+                   if (approvedMap != null && !approvedMap.isEmpty()) {
+                      for (Map.Entry<String, List<Object[]>> entry : approvedMap.entrySet()) {
+                          List<Object[]> roleList = entry.getValue();
+
+                          if (roleList != null && !roleList.isEmpty()) {
+                              hasApprovedData = true;
+                              int sN = 1;
+                 %>
+                              <div style="margin-top: 15px; margin-bottom: 12px;">
+                                  <span class="badge badge-primary" style="font-size: 14px;padding: 10px 10px !important;"><%= roleNamesApproved.getOrDefault(entry.getKey(), entry.getKey()) %></span>
+                              </div>
+
+                              <div class="table-responsive" style="margin-top: 0.5rem; font-weight: 600;">
+                                 <table class="table table-bordered" id="Approval_<%= entry.getKey() %>">
+                                     <thead>
+                                           <tr>
+                                               <th>SN</th>
+                                               <th style="width: 12%;" class="text-nowrap">Estimate Type</th>
+                                               <th>Division</th>
+                                               <th class="text-nowrap">Budget Head</th>
+                                               <th class="text-nowrap">Item Nomenclature</th>
+                                               <th class="text-nowrap">Item Cost</th>
+                                               <th class="text-nowrap">View</th>
+                                               <th style="width: 15%;">Status</th>
+                                           </tr>
+                                     </thead>
+                                     <tbody>
+                                     <% for (Object[] obj : roleList) { %>
+                                         <tr>
+                                             <td align="center"><%= sN++ %>.</td>
+                                             <td align="center" style="width: 12%;"><%= (obj[1]!=null && obj[1].toString().equalsIgnoreCase("R")) ? "RE" : "FBE" %></td>
+                                             <td align="left"><% if(obj[13]!=null){%> <%=obj[13] %> <%if(obj[12]!=null){ %> (<%=obj[12] %>) <%} %> <%}else{ %> - <%} %></td>
+                                             <td align="left"><%= (obj[8]!=null) ? obj[8] : "-" %></td>
+                                             <td align="left"><%= (obj[14]!=null) ? obj[14] : "-" %></td>
+                                             <td align="right"><%=AmountConversion.amountConvertion(obj[17], "R") %></td>
+                                             <td align="center">
+                                                 <button type="button" class="btn btn-sm btn-outline-primary tooltip-container" onclick="openFundDetailsModal('<%=obj[0] %>', this)" data-tooltip="Fund Request Details" data-position="top">
+                                                     <i class="fa fa-eye"></i>
+                                                 </button>
+                                             </td>
+                                             <%
+                                                 String[] fDetails = CommonActivity.getFundNextStatus(obj[19].toString(), obj[20], obj[22]);
+                                             %>
+                                             <td style="width: 215px;" align="center">
+                                                 <button type="button" class="btn btn-sm w-100 btn-status greek-style" onclick="openApprovalStatusAjax('<%=obj[0]%>')">
+                                                     <div class="form-inline">
+                                                          <span style="color:<%=fDetails[5] %>;" > <%=fDetails[4] %> </span> &nbsp;&nbsp;&nbsp;
+                                                          <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=fDetails[5] %>;"></i>
+                                                     </div>
+                                                 </button>
+                                             </td>
+                                         </tr>
+                                     <% } %>
+                                     </tbody>
+                                 </table>
+                              </div>
+                 <%
+                          }
+                      }
+                   }
+
+                   if (!hasApprovedData) { %>
+                     <div class="text-center text-danger" style="padding: 20px;font-weight: 600;">
+                         No Approved Records Found
+                     </div>
+                 <% } %>
+             </section>
 		    </div>
 		  </div>
 	

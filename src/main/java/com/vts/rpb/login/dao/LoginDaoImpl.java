@@ -69,14 +69,14 @@ public class LoginDaoImpl implements LoginDao
 					+ "ROUND(SUM(CASE  WHEN f.EstimateType = 'F' THEN IFNULL(f.Apr, 0) + IFNULL(f.May, 0) + IFNULL(f.Jun, 0) + IFNULL(f.Jul, 0) +IFNULL(f.Aug, 0) + IFNULL(f.Sep, 0) + IFNULL(f.Oct, 0) +\r\n"
 					+ "IFNULL(f.Nov, 0) +IFNULL(f.December, 0) + IFNULL(f.Jan, 0) + IFNULL(f.Feb, 0) + IFNULL(f.Mar, 0) ELSE 0 END) / :rupeeValue, 2) AS FBE_TotalCost,\r\n"
 					+ "dm.DivisionCode \r\n"
-					+ "FROM pms_dms_dev.division_master dm \r\n"
+					+ "FROM "+ mdmdb +".division_master dm \r\n"
 					+ "LEFT JOIN fund_approval f ON f.DivisionId = dm.DivisionId AND f.finYear = :finYear \r\n"
 					+ "WHERE \r\n"
 					+ "(CASE\r\n"
 					+ "	WHEN ('A' = :loginType OR :memberType IN ('CS', 'CC')) THEN 1=1\r\n"
-					+ "	WHEN 'U' = :loginType THEN dm.DivisionId IN (SELECT e.DivisionId FROM pms_dms_dev.employee e WHERE e.IsActive = '1' AND e.EmpId = :empId AND e.LabCode = :labCode)\r\n"
-					+ "	WHEN 'G' = :loginType THEN dm.DivisionId IN (SELECT di.DivisionId FROM pms_dms_dev.division_master di INNER JOIN pms_dms_dev.division_group dg ON dg.GroupId = di.GroupId AND dg.GroupHeadId = :empId AND dg.IsActive = '1' WHERE di.IsActive = '1')\r\n"
-					+ "	WHEN 'D' = :loginType THEN dm.DivisionId IN (SELECT di.DivisionId FROM pms_dms_dev.division_master di WHERE di.DivisionHeadId = :empId AND di.IsActive = '1')\r\n"
+					+ "	WHEN 'U' = :loginType THEN dm.DivisionId IN (SELECT e.DivisionId FROM "+ mdmdb +".employee e WHERE e.IsActive = '1' AND e.EmpId = :empId AND e.LabCode = :labCode)\r\n"
+					+ "	WHEN 'G' = :loginType THEN dm.DivisionId IN (SELECT di.DivisionId FROM "+ mdmdb +".division_master di INNER JOIN "+ mdmdb +".division_group dg ON dg.GroupId = di.GroupId AND dg.GroupHeadId = :empId AND dg.IsActive = '1' WHERE di.IsActive = '1' UNION SELECT e.DivisionId FROM "+ mdmdb +".employee e WHERE e.EmpId = :empId AND e.IsActive = '1')\r\n"
+					+ "	WHEN 'D' = :loginType THEN dm.DivisionId IN (SELECT di.DivisionId FROM "+ mdmdb +".division_master di WHERE di.DivisionHeadId = :empId AND di.IsActive = '1' UNION SELECT e.DivisionId FROM "+ mdmdb +".employee e WHERE e.EmpId = :empId AND e.IsActive = '1')\r\n"
 					+ " END)\r\n"
 					+ " GROUP BY dm.DivisionId, dm.DivisionName");
 			query.setParameter("rupeeValue", RupeeValue);

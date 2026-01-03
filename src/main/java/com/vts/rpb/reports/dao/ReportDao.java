@@ -14,5 +14,4 @@ public interface ReportDao
 	
 	public List<Object[]> getNoteSheetFundDetails(String fundApprovalId);
 	
-	public List<Object[]> getNoteSheetMemberDetails(String fundApprovalId);
 }

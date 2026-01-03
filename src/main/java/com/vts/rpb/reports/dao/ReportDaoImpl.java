@@ -162,21 +162,4 @@ public class ReportDaoImpl implements ReportDao
 		    }
 	}
 	
-	@Override
-	public List<Object[]> getNoteSheetMemberDetails(String fundApprovalId){
-		 try {
-		        Query query = manager.createNativeQuery("CALL Ibas_Fund_Master_Flow_Details(:fundApprovalId)");
-		        System.out.println(" CALL Ibas_Fund_Master_Flow_Details("+fundApprovalId+");");
-		        
-		        query.setParameter("fundApprovalId", fundApprovalId);
-		       
-		        return  (List<Object[]>)query.getResultList();
-		    } catch (Exception e) {
-		        logger.error(new Date() + "Inside DAO getNoteSheetFundDetails() " + e);
-		        e.printStackTrace();
-		        return null;
-		    }
-	}
-	
-	
 }

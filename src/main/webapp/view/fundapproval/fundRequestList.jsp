@@ -290,6 +290,7 @@ input[name="ItemNomenclature"]::placeholder {
 </head>
 <body>
 		<% DecimalFormat df=new DecimalFormat("#########################");
+		CommonActivity commonActivity = new CommonActivity();
 		List<Object[]> requisitionList=(List<Object[]>)request.getAttribute("RequisitionList"); 
 		List<Object[]> DivisionList=(List<Object[]>)request.getAttribute("DivisionList"); 
 		List<Object[]> previousYearFundDetails=(List<Object[]>)request.getAttribute("previousYearFbeDetails");
@@ -484,10 +485,7 @@ input[name="ItemNomenclature"]::placeholder {
 				                   			 
 				                   					<button type="button"  class="btn btn-sm w-100 btn-status greek-style tooltip-container" data-tooltip="click to view status" data-position="top" 
 												            onclick="openApprovalStatusAjax('<%=data[0]%>')">
-												            
-												            <% 
-												               %>
-												               
+
 												           		<div class="form-inline">
 												           		 	<span style="color:<%=statusColor %>;" > <%=message %> </span> &nbsp;&nbsp;&nbsp;
 												            		<i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=statusColor %>;"></i>
@@ -508,7 +506,7 @@ input[name="ItemNomenclature"]::placeholder {
 										        
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";%>
 												
-													<img id="ForwardButton" onclick="openForwardModal('<%=data[0] %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=data[7] %>','<%=data[9]!=null ? (data[9].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[12] %>','<%=data[16] %>','<%=data[17]!=null ? (data[17].toString().trim()).replace("'", "\\'").replace("\"", "\\\"").replace("\n", " ").replace("\r", " ") : "" %>','<%=data[20] %>','<%=data[21] %>','<%=divisionDetails %>','<%=fundStatus %>','<%=data[31] %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+													<img id="ForwardButton" onclick="openForwardModal('<%=commonActivity.safeSpecialCharcaterReplace(data[0]) %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=commonActivity.safeSpecialCharcaterReplace(data[7]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[9]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[12]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[16]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[17]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[20]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[21]) %>','<%=commonActivity.safeSpecialCharcaterReplace(divisionDetails) %>','<%=fundStatus %>','<%=data[31] %>','<%=commonActivity.safeSpecialCharcaterReplace(data[34]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[35]) %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
 					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) || "CC".contains(MemberType) || "CS".contains(MemberType))) { buttonStatus = 1; %>
 					                       		
@@ -788,7 +786,7 @@ input[name="ItemNomenclature"]::placeholder {
 										<input type="hidden" id="FundRequestAction" name="FundRequestAction">
 										<input type="hidden" id="FundRequestIdForward" name="FundRequestIdForward">
 										<input type="hidden" id="FundFlowMasterIdForward" name="FundFlowMasterIdForward">
-										
+
 				                            <div id="your-parent-element-id" style="gap: 1rem; width: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column;" data-select2-id="your-parent-element-id">
 				                              <div class="card ApprovalDetails table-responsive" style="width: 100%;padding:10px;"> 
 				                              	<table style="width: 100%;" id="fundApprovalForardTable">
@@ -958,7 +956,7 @@ var masterFlowDetails = null;
 var chairmanId = null;
 var SecretaryId = null;
 
-// Master copies 
+// Master copies
 var masterEmployeeList = [];
 var masterCommitteeList = [];
 
@@ -1059,12 +1057,12 @@ function fillDropdown(inputId, memberType, sourceList, divisionHeadId, selectedV
     $dropdown.empty().append('<option value="">Select Employee</option>');
 
     sourceList.forEach(function(value) {
-        var listMemberType = value[1];
+        var listMemberType = value[1] || "NA"; // Extract member type from index 1
         var empId = (memberType === "DH") ? value[0] : value[2];
         var empName = (memberType === "DH") ? value[2] : value[3];
         var empDesig = (memberType === "DH") ? value[3] : value[4];
 
-        // role filter
+        // --- role filter logic ---
         if (memberType.split(',').map(v => v.trim()).includes('DH')) {
             // allow all
         } else if ((memberType.split(',').map(v => v.trim()).includes('CM') || memberType.split(',').map(v => v.trim()).includes('SE')) && listMemberType !== 'CM') {
@@ -1076,28 +1074,35 @@ function fillDropdown(inputId, memberType, sourceList, divisionHeadId, selectedV
         }
 
         var selAttr = (selectedVal && (empId + "") === (selectedVal + "")) ? " selected" : "";
-        $dropdown.append('<option value="' + empId + '"' + selAttr + '>' + (empName || '') + (empDesig ? ', ' + empDesig : '') + '</option>');
+
+        // --- ADDED: data-memberType attribute ---
+        var optionHtml = '<option value="' + empId + '" data-memberType="' + listMemberType + '"' + selAttr + '>'
+                         + (empName || '')
+                         + (empDesig ? ', ' + empDesig : '')
+                         + '</option>';
+
+        $dropdown.append(optionHtml);
     });
 
-    // If selectedVal not present (maybe it was removed earlier), append it from master so UI shows it
+    // If selectedVal not present, append it with data attribute
     if (selectedVal) {
         var exists = $dropdown.find('option[value="' + selectedVal + '"]').length > 0;
         if (!exists) {
             if (memberType === "DH") {
                 var mObj = masterEmployeeList.find(e => (e[0] + "") === (selectedVal + ""));
                 if (mObj) {
-                    $dropdown.append('<option value="' + mObj[0] + '" selected>' + (mObj[2] || '') + (mObj[3] ? ', ' + mObj[3] : '') + '</option>');
+                    $dropdown.append('<option value="' + mObj[0] + '" data-memberType="' + (mObj[1] || 'NA') + '" selected>' + (mObj[2] || '') + (mObj[3] ? ', ' + mObj[3] : '') + '</option>');
                 }
             } else {
                 var cObj = masterCommitteeList.find(e => (e[2] + "") === (selectedVal + ""));
                 if (cObj && isAllowedFor(memberType, selectedVal)) {
-                    $dropdown.append('<option value="' + cObj[2] + '" selected>' + (cObj[3] || '') + (cObj[4] ? ', ' + cObj[4] : '') + '</option>');
+                    $dropdown.append('<option value="' + cObj[2] + '" data-memberType="' + (cObj[1] || 'NA') + '" selected>' + (cObj[3] || '') + (cObj[4] ? ', ' + cObj[4] : '') + '</option>');
                 }
             }
         }
     }
 
-    // refresh select2 UI if present
+    // refresh select2 UI
     if ($dropdown.hasClass('select2')) {
         try { $dropdown.trigger('change.select2'); } catch(e) {}
     }
@@ -1214,7 +1219,7 @@ function attachDropdownChangeHandler() {
 // ================= OPEN FORWARD MODAL (main flow) =================
 function openForwardModal(
     fundRequestId, estimatedCost, estimatedType, ReFbeYear, budgetHeadDescription, HeadOfAccounts,
-    CodeHead, Itemnomenclature, justification, empName, designation, divisionDetails, fundStatus, divisionHeadId)
+    CodeHead, Itemnomenclature, justification, empName, designation, divisionDetails, fundStatus, divisionHeadId, divisionHeadName, divisionHeadDesig)
 {
     // store divisionHeadId globally for fillDropdown when needed
     currentDivisionHeadId = divisionHeadId || "";
@@ -1276,7 +1281,7 @@ function openForwardModal(
     $.ajax({
         url: 'GetMasterFlowDetails.htm',
         method: 'GET',
-        data: { fundRequestId: fundRequestId },
+        data: { fundRequestId: fundRequestId, masterFlowAction : '0' },   // masterFlowAction - 0 is before forward, 1 is after forward
         success: function(responseJson) {
             var data = JSON.parse(responseJson || "[]");
             masterFlowDetails = data;
@@ -1297,6 +1302,12 @@ function openForwardModal(
                 '<td style="padding: 8px;width: 70% !important;" colspan="1"><input type="text" class="form-control" readonly="readonly" id="initiating_officer_display" name="initiating_officer_display" value="' + empName + ', ' + designation + '"></td>' +
                 '</tr>'
             );
+            // Division Head row
+            $("#fundApprovalForardTable").append(
+                '<tr><td style="padding: 8px; text-align: right; color: #00087a; font-weight: 600; white-space: nowrap; display: flex; align-items: center;width: 30% !important;">Division Head :</td>' +
+                '<td style="padding: 8px;width: 70% !important;" colspan="1"><input type="text" class="form-control" readonly="readonly" id="DivisionHead_display" name="DivisionHead_display" value="' + divisionHeadName + ', ' + divisionHeadDesig + '"><input type="hidden" name="divisionHeadDetails" value="'+divisionHeadId+'"></td>' +
+                '</tr>'
+            );
 
             var cmCount = 0;
 
@@ -1308,27 +1319,41 @@ function openForwardModal(
                 var inputId = null;
                 var preSelectId = "";
 
-                if (memberType === "CM") {
-                    cmCount++;
-                    appendFlowRow(memberType, cmCount);
-                    inputId = "#RPBMemberDetails" + cmCount;
-                    preSelectId = backendEmpId;
-                } else {
-                    appendFlowRow(memberType, "");
-                    if (memberType === "DH") { inputId = "#divisionHeadDetails"; preSelectId = divisionHeadId; }
-                    if (memberType === "SE") { inputId = "#SubjectExpertDetails"; preSelectId = backendEmpId; }
-                    if (memberType === "CC") { inputId = "#chairmanDetails"; preSelectId = chairmanId; }
-                    if (memberType === "CS") { inputId = "#RPBMemberSecretaryDetails"; preSelectId = SecretaryId; }
+                if(memberType != 'DH')
+                {
+                 if (memberType === "CM") {
+                        cmCount++;
+                        appendFlowRow(memberType, cmCount);
+                        inputId = "#RPBMemberDetails" + cmCount;
+                        preSelectId = backendEmpId;
+                    } else {
+                        appendFlowRow(memberType, "");
+                        if (memberType === "SE") { inputId = "#SubjectExpertDetails"; preSelectId = backendEmpId; }
+                        if (memberType === "CC" || memberType === "SC") { inputId = "#chairmanDetails"; preSelectId = chairmanId; }
+                        if (memberType === "CS") { inputId = "#RPBMemberSecretaryDetails"; preSelectId = SecretaryId; }
+                    }
+
+                    if (!inputId) return;
+
+                    // per-dropdown working copy (we'll rebuild in master order below)
+                    var listCopy = (memberType === "DH") ? [...masterEmployeeList] : [...masterCommitteeList];
+                    dropdownEmployeeMap.set(inputId, { memberType: memberType, list: listCopy });
+
+                    // set the preselected value into the selectedMap
+                    if (preSelectId) selectedMap.set(inputId, preSelectId);
+
+                    if(memberType === "DH") {
+                        let hiddenName = inputId.replace('#', '');
+                        let $hiddenInput = $("<input>").attr({
+                            type: "hidden",
+                            name: hiddenName,
+                            value: preSelectId || ""
+                        });
+
+                        $(inputId).after($hiddenInput);
                 }
 
-                if (!inputId) return;
-
-                // per-dropdown working copy (we'll rebuild in master order below)
-                var listCopy = (memberType === "DH") ? [...masterEmployeeList] : [...masterCommitteeList];
-                dropdownEmployeeMap.set(inputId, { memberType: memberType, list: listCopy });
-
-                // set the preselected value into the selectedMap
-                if (preSelectId) selectedMap.set(inputId, preSelectId);
+                }
             });
 
             // Rebuild every dropdown's list in master order excluding already selected
@@ -1355,10 +1380,23 @@ function appendFlowRow(role, index) {
 
     let $tdInput = $("<td>").css({ padding: "8px", width: "63%" });
 
-    let $select = $("<select>").attr({ id: inputId, name: inputName })
+    // Define basic attributes
+        let selectAttrs = { id: inputId };
+
+        // Only add the name attribute if the role is NOT 'DH'
+        if (role !== 'DH') {
+            selectAttrs.name = inputName;
+        }
+
+    let $select = $("<select>").attr(selectAttrs)
         .addClass("form-control select2 forwardDropDown")
         .css({ width: "100%", "font-size": "10px", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" })
         .append('<option value="">Select Employee</option>');
+
+        // Logic to disable the dropdown if role is 'DH'
+            if (role === 'DH') {
+                $select.attr("disabled", true);
+            }
 
     $tdInput.append($select);
     $tr.append($tdLabel).append($tdInput);
@@ -1383,6 +1421,13 @@ const labelMap = {
     "#RPBMemberSecretaryDetails": "RPB Member Secretary",
     "#chairmanDetails": "RPB Chairman / Standby Chairman"
 };
+
+$(document).on('change', '#chairmanDetails', function() {
+
+    var memberType = $(this).find(':selected').data('membertype');
+    console.log("memberType****"+memberType);
+
+});
 
 /* // ---------------- SUBMIT / VALIDATE ----------------
 function ApprovalFlowForward() {
@@ -1488,7 +1533,7 @@ function ApprovalFlowForward() {
 
 /*     for (let [selector, value] of selectedMap.entries()) {
         if (!value || value.trim() === "") {
-            let message = labelMap[selector] 
+            let message = labelMap[selector]
                           || (selector.startsWith("#RPBMemberDetails") ? "RPB Member" : "Unknown");
             showAlert("Please select an employee for " + message + " ..!");
             $(selector).focus();

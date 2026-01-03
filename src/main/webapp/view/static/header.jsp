@@ -1096,56 +1096,6 @@ function rupeeFormat(amount) {
 			 
 			 
 	<script type="text/javascript">
-	
-	$(document).ready(function() {
-		
-		var dtstatus=$("#hiddendeveloperToolsStatus");
-		if(dtstatus)
-			{
-			    dtstatus=dtstatus.val();
-			    if(dtstatus)
-			    	{
-			    	 	DevelopersToolsSettings(dtstatus);
-			    	}
-				
-			}
-		
-	    $('#devTools').on('click',function(){
-	    	var status = $(this).prop('checked') ? '0' : '1';
-	        DevelopersToolsSettings(status);
-	    });
-	});
-	
-	function DevelopersToolsSettings(status) {
-		
-		 $.get('UpdateDeveloperToolsStatus.htm', {
-            	status : status
-			}, function(responseJson) {
-				if(responseJson!=null && responseJson=='1')
-					{
-						$(document).on("contextmenu.customMenu", function(e) {
-		                    e.preventDefault(); // Disable the default right-click menu
-		                    $('#custom-menu').css({
-		                        display: "block",
-		                        left: e.pageX,
-		                        top: e.pageY
-		                    });
-		                });
-
-		                // Hide custom menu when clicking elsewhere
-		                $(document).on("click.customMenu", function() {
-		                    $('#custom-menu').hide();
-		                });
-					}
-				else
-					{
-					    $(document).off("contextmenu.customMenu"); 
-		                $(document).off("click.customMenu"); 
-		                $('#custom-menu').hide();
-					}
-				
-			});
-       }
 
 	function RegularDateFormat(DateValue)
 	{ 

@@ -39,9 +39,4 @@ public class ReportServiceImpl implements ReportService
 		return reportDao.getNoteSheetFundDetails(fundApprovalId);
 	}
 	
-	@Override
-	public List<Object[]> getNoteSheetMemberDetails(String fundApprovalId){
-		return reportDao.getNoteSheetMemberDetails(fundApprovalId);
-	}
-	
 }
