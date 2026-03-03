@@ -4,14 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
-import com.vts.rpb.fundapproval.modal.FundApproval;
-import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
-import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
-import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
-import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
-import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
+import com.vts.rpb.fundapproval.modal.*;
 
-public interface FundApprovalDao 
+	public interface FundApprovalDao
 {
 public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 	
@@ -146,5 +141,8 @@ public long AddFundRequestSubmit(FundApproval modal) throws Exception;
 
 	public void transferFundMemberLinkedDetails(String oldFundApprovalId, long newFundApprovalId, String userName);
 
+	public List<FundApprovalAttach> getFundRequestAttachement(String fundApprovalId);
+
+	long insertAttachementRevision(FundApprovalAttachRev revisionAttach);
 }
 

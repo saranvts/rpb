@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.vts.rpb.fundapproval.modal.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,12 +37,6 @@ import com.vts.rpb.fundapproval.dto.FundApprovalAttachDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
 import com.vts.rpb.fundapproval.dto.FundApprovalDto;
 import com.vts.rpb.fundapproval.dto.FundRequestCOGDetails;
-import com.vts.rpb.fundapproval.modal.FundApproval;
-import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
-import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
-import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
-import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
-import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
 
 @Service
 @Transactional
@@ -94,7 +89,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
 							modal.setFundApprovalId(FundApprovalId);
 							modal.setFileName(attachDto.getFileName()[i].trim());
 							modal.setOriginalFileName(attachDto.getFiles()[i].getOriginalFilename().trim());
-				
+							modal.setRevisionNo(0);
 							modal.setCreatedBy(attachDto.getCreatedBy());
 							modal.setCreatedDate(LocalDateTime.now());
 				
@@ -1055,22 +1050,6 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			revision.setFebruary(fundApprovalRevise.getFebruary());
 			revision.setMarch(fundApprovalRevise.getMarch());
 			revision.setInitiatingOfficer(fundApprovalRevise.getInitiatingOfficer());
-//			revision.setRc1(fundApprovalRevise.getRc1());
-//			revision.setRc1Role(fundApprovalRevise.getRc1Role());
-//			revision.setRc2(fundApprovalRevise.getRc2());
-//			revision.setRc2Role(fundApprovalRevise.getRc2Role());
-//			revision.setRc3(fundApprovalRevise.getRc3());
-//			revision.setRc3Role(fundApprovalRevise.getRc3Role());
-//			revision.setRc4(fundApprovalRevise.getRc4());
-//			revision.setRc4Role(fundApprovalRevise.getRc4Role());
-//			revision.setRc5(fundApprovalRevise.getRc5());
-//			revision.setRc5Role(fundApprovalRevise.getRc5Role());
-//			revision.setRc6(fundApprovalRevise.getRc6());
-//			revision.setRc6Role(fundApprovalRevise.getRc6Role());
-//			revision.setApprovingOfficer(fundApprovalRevise.getApprovingOfficer());
-//			revision.setApprovingOfficerRole(fundApprovalRevise.getApprovingOfficerRole());
-//			revision.setRcStatusCode(fundApprovalRevise.getRcStatusCode());
-//			revision.setRcStatusCodeNext(fundApprovalRevise.getRcStatusCodeNext());
 			revision.setStatus(fundApprovalRevise.getStatus());
 			revision.setRemarks(fundApprovalRevise.getRemarks());
 			revision.setApprovalDate(fundApprovalRevise.getApprovalDate());
@@ -1079,8 +1058,29 @@ public class FundApprovalServiceImpl implements FundApprovalService
 			revision.setCreatedDate(LocalDateTime.now());
 
 			fundApprovalDao.RevisionDetailsSubmit(revision);
+
+			List<FundApprovalAttach> fundApprovalAttach = fundApprovalDao.getFundRequestAttachement(fundApprovalId);
+			if(fundApprovalAttach == null)
+			{
+				throw new RuntimeException("fundApprovalAttach list is null");
+			}
+
+			fundApprovalAttach.stream()
+					.forEach(attach -> {
+						FundApprovalAttachRev revisionAttach = new FundApprovalAttachRev();
+						revisionAttach.setFundApprovalAttachId(attach.getFundApprovalAttachId());
+						revisionAttach.setFundApprovalId(attach.getFundApprovalId());
+						revisionAttach.setFileName(attach.getFileName());
+						revisionAttach.setOriginalFileName(attach.getOriginalFileName());
+						revisionAttach.setPath(attach.getPath());
+						revisionAttach.setRevisionNo(attach.getRevisionNo());
+						revisionAttach.setCreatedBy(UserName);
+						revisionAttach.setCreatedDate(LocalDateTime.now());
+						fundApprovalDao.insertAttachementRevision(revisionAttach);
+					});
+
 			
-			return revisionCount;
+			return 1;
 		}
 		return 0;
 		

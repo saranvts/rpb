@@ -15,8 +15,6 @@ import lombok.Data;
 @Entity(name ="fund_approved_revision")
 public class FundApprovedRevision {
 
-	
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "FundApprovedRevisionId")

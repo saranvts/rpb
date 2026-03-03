@@ -308,8 +308,9 @@ public class FundApprovalController
 						
 						req.setAttribute("fundDetails",particularFundDetails);
 
-						String fromYear =null,toYear = null,finYear = null;
+						String fromYear =null,toYear = null,finYear = null, reFbeYear = null;
 						finYear = particularFundDetails[2]!=null ? particularFundDetails[2].toString() : null;
+						reFbeYear = particularFundDetails[3]!=null ? particularFundDetails[3].toString() : null;
 						fromYear = finYear != null ? finYear.split("-")[0] : null;
 						toYear = finYear != null ? finYear.split("-")[1] : null;
 						
@@ -325,13 +326,11 @@ public class FundApprovalController
 		   			   {
 		   				   if(backDto.getEstimatedTypeBackBtn().equalsIgnoreCase("R")) 
 		   				   {
-		   					   backDto.setREYear(fromYear+"-"+toYear);
-				   			   backDto.setFBEYear((Long.parseLong(fromYear)+1)+"-"+(Long.parseLong(toYear)+1));
+		   					   backDto.setREYear(reFbeYear);
 		   				   }
 		   				   else if(backDto.getEstimatedTypeBackBtn().equalsIgnoreCase("F")) 
 		   				   {
-		   					   backDto.setFBEYear(fromYear+"-"+toYear);
-		   					   backDto.setREYear((Long.parseLong(fromYear)-1)+"-"+(Long.parseLong(toYear)-1));
+		   					   backDto.setFBEYear(reFbeYear);
 		   				   }
 		   			   }
 		   			   ses.setAttribute("FundApprovalAttributes", backDto);
@@ -1097,12 +1096,11 @@ public class FundApprovalController
 			}
 			else if(action.equalsIgnoreCase("Revise")) {
 				
-				long revisionCount=fundApprovalService.getRevisionListDetails(fundApprovalId,UserName);
-				
-				
+				long revisionStatus=fundApprovalService.getRevisionListDetails(fundApprovalId,UserName);
+
 				FundApproval exisitingFundApproval=fundApprovalService.getExisitingFundApprovalList(fundApprovalId);
 				
-				exisitingFundApproval.setRevisionCount(revisionCount);
+				exisitingFundApproval.setRevisionCount(exisitingFundApproval.getRevisionCount() + 1);
 				exisitingFundApproval.setInitiationId(initiationId!=null ? Long.parseLong(initiationId) : 0);
 				exisitingFundApproval.setInitiatingOfficer(empId!=null ? Long.valueOf(empId) : 0);
 				exisitingFundApproval.setProjectId(budget!=null ? Long.valueOf(budget) : 0);
@@ -1125,6 +1123,7 @@ public class FundApprovalController
 				exisitingFundApproval.setJanuary(jan != null && !jan.trim().isEmpty() ? new BigDecimal(jan.trim()) : BigDecimal.ZERO);
 				exisitingFundApproval.setFebruary(feb != null && !feb.trim().isEmpty() ? new BigDecimal(feb.trim()) : BigDecimal.ZERO);
 				exisitingFundApproval.setMarch(mar != null && !mar.trim().isEmpty() ? new BigDecimal(mar.trim()) : BigDecimal.ZERO);
+				exisitingFundApproval.setStatus("N");
 				exisitingFundApproval.setModifiedBy(UserName);
 				exisitingFundApproval.setModifiedDate(LocalDateTime.now());
 				exisitingFundApproval.setRemarks(exisitingFundApproval.getRemarks()!=null ? exisitingFundApproval.getRemarks().trim() : null);
@@ -1138,8 +1137,7 @@ public class FundApprovalController
 			    attachDto.setExistingAttachmentIds(existingAttachmentIds);
 				
 				 long status = fundApprovalService.RevisionFundRequestSubmit(exisitingFundApproval, attachDto);
-				
-					
+
 					if(status > 0) {
 						redir.addAttribute("resultSuccess", "Fund Request Revised Successfully ..&#128077;");
 					}else {

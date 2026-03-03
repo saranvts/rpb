@@ -2,24 +2,18 @@ package com.vts.rpb.fundapproval.dao;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.vts.rpb.fundapproval.modal.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Repository;
 
 import com.vts.rpb.fundapproval.dto.FundApprovalBackButtonDto;
-import com.vts.rpb.fundapproval.modal.FundApproval;
-import com.vts.rpb.fundapproval.modal.FundApprovalAttach;
-import com.vts.rpb.fundapproval.modal.FundApprovalQueries;
-import com.vts.rpb.fundapproval.modal.FundApprovalTrans;
-import com.vts.rpb.fundapproval.modal.FundApprovedRevision;
-import com.vts.rpb.fundapproval.modal.FundLinkedMembers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -139,7 +133,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	public List<Object[]> getMasterFlowDetails(long fundRequestId, String masterFlowAction) throws Exception {
 		try {
 			Query query= manager.createNativeQuery("CALL Ibas_Fund_Master_Flow_Details(:fundRequestId, :masterFlowAction)");
-			System.out.println("CALL Ibas_Fund_Master_Flow_Details('"+fundRequestId+"');");
+			System.out.println("CALL Ibas_Fund_Master_Flow_Details('"+fundRequestId+"','"+masterFlowAction+"');");
 			query.setParameter("fundRequestId",fundRequestId);
 			query.setParameter("masterFlowAction",masterFlowAction);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
@@ -297,7 +291,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public List<Object[]> getParticularFundApprovalTransDetails(String fundApprovalId) throws Exception {
 		try {
-			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,e.EmpName,d.Designation,fd.StatusName,f.Remarks,f.ActionDate,f.ActionBy FROM ibas_fund_approval_trans f LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.ActionBy LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId= e.DesigId LEFT JOIN ibas_flow_details fd ON fd.FlowDetailsId = f.FlowDetailsId WHERE FundApprovalId=:fundApprovalId");
+			Query query= manager.createNativeQuery("SELECT f.FundApprovalId,e.EmpName,d.Designation,fd.StatusName,f.Remarks,DATE_FORMAT(f.ActionDate, '%b %e, %Y') AS ActionDate,f.ActionBy FROM ibas_fund_approval_trans f LEFT JOIN "+mdmdb+".employee e ON e.EmpId = f.ActionBy LEFT JOIN "+mdmdb+".employee_desig d ON d.DesigId= e.DesigId LEFT JOIN ibas_flow_details fd ON fd.FlowDetailsId = f.FlowDetailsId WHERE FundApprovalId=:fundApprovalId");
 			query.setParameter("fundApprovalId",fundApprovalId);
 			List<Object[]> List =  (List<Object[]>)query.getResultList();
 			return List;
@@ -1241,6 +1235,35 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 			});
 		}
 		
+	}
+
+	@Override
+	public List<FundApprovalAttach> getFundRequestAttachement(String fundApprovalId) {
+		try {
+			return manager.createQuery("SELECT f FROM fund_approval_attach f WHERE f.fundApprovalId = :fundId",FundApprovalAttach.class)
+					.setParameter("fundId", fundApprovalId)
+					.getResultList();
+
+		} catch (Exception e) {
+			logger.error(new Date() + " Inside DAO getFundRequestAttachement: " + e.getMessage());
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public long insertAttachementRevision(FundApprovalAttachRev revisionAttach) {
+		try {
+			manager.persist(revisionAttach);
+			manager.flush();
+
+			return revisionAttach.getFundApprovalAttachRevId();
+
+		} catch (Exception e) {
+			logger.error(new Date() +"Inside DAO insertAttachementRevision "+ e);
+			e.printStackTrace();
+			return 0L;
+		}
 	}
 
 }

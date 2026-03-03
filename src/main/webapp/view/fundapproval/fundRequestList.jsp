@@ -445,9 +445,7 @@ input[name="ItemNomenclature"]::placeholder {
 					            <%for(Object[] data:requisitionList){ 
 					            	grandTotal=grandTotal.add(new BigDecimal(data[18].toString()));
 					            	String fundStatus=data[24]==null ? "NaN" : data[24].toString();
-					            	if(fundStatus!=null){
-					            		System.err.println("fnudstatus="+fundStatus);
-					            	}
+					            	String revisionStatus=data[36]==null ? "NaN" : data[36].toString();
 					            %>
 					            
 					            	 <tr>
@@ -505,8 +503,8 @@ input[name="ItemNomenclature"]::placeholder {
 											        </button>
 										        
 										        <% String divisionDetails = data[26] != null ? data[26].toString() +" ("+ (data[25]!=null ? data[25].toString() : "NA") +")" : "";%>
-												
-													<img id="ForwardButton" onclick="openForwardModal('<%=commonActivity.safeSpecialCharcaterReplace(data[0]) %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=commonActivity.safeSpecialCharcaterReplace(data[7]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[9]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[12]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[16]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[17]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[20]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[21]) %>','<%=commonActivity.safeSpecialCharcaterReplace(divisionDetails) %>','<%=fundStatus %>','<%=data[31] %>','<%=commonActivity.safeSpecialCharcaterReplace(data[34]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[35]) %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R"))){ %> RE-<%} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
+
+													<img id="ForwardButton" onclick="openForwardModal('<%=commonActivity.safeSpecialCharcaterReplace(data[0]) %>','<%=data[18]!=null ? df.format(data[18]) : 0 %>','<%=data[1] %>','<%=data[4] %>','<%=commonActivity.safeSpecialCharcaterReplace(data[7]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[9]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[12]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[16]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[17]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[20]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[21]) %>','<%=commonActivity.safeSpecialCharcaterReplace(divisionDetails) %>','<%=fundStatus %>','<%=data[31] %>','<%=commonActivity.safeSpecialCharcaterReplace(data[34]) %>','<%=commonActivity.safeSpecialCharcaterReplace(data[35]) %>')" data-tooltip="<%if(fundStatus!=null && (fundStatus.equalsIgnoreCase("E") || fundStatus.equalsIgnoreCase("R") || !revisionStatus.equalsIgnoreCase("R-0"))){ %> <%if(!revisionStatus.equalsIgnoreCase("R-0")){ %> Revision RE - <% }else{ %> RE - <%}} %>Forward Item for Approval" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/forwardIcon.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 12px; padding-top: 8px; padding-bottom: 10px;">
 					                       		
 					                       		<%} else if((data[24]!=null && (data[24].toString()).equalsIgnoreCase("A")) && ("A".equalsIgnoreCase(loginType) || "CC".contains(MemberType) || "CS".contains(MemberType))) { buttonStatus = 1; %>
 					                       		
