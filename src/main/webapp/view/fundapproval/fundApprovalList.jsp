@@ -407,6 +407,7 @@ String failure=(String)request.getParameter("resultFailure");%>
                                                <th class="text-nowrap">Item Cost</th>
                                                <th class="text-nowrap">View</th>
                                                <th style="width: 15%;">Status</th>
+                                               <th style="width: 5%;">Action</th>
                                            </tr>
                                      </thead>
                                      <tbody>
@@ -433,6 +434,18 @@ String failure=(String)request.getParameter("resultFailure");%>
                                                           <i class="fa-solid fa-arrow-up-right-from-square" style="float: right;color:<%=fDetails[5] %>;"></i>
                                                      </div>
                                                  </button>
+                                             </td>
+
+                                             <td style="width: 215px;" align="center">
+                                             <%
+                                                 String status = obj[19] != null ? obj[19].toString() : "";
+                                                 String mType = memberType != null ? memberType : "";
+
+                                                 if(status.equalsIgnoreCase("A") && (mType.contains("CC") || mType.contains("CS"))) {
+                                             %>
+                                                    <img id="noteSheet" onclick="window.open('NoteSheetPrint.htm?fundApprovalId=<%=obj[0]%>', '_blank')" data-tooltip="Note Sheet Download" data-position="left" data-toggle="tooltip" class="btn-sm tooltip-container" src="view/images/note-pad.png" width="45" height="35" style="cursor:pointer; background: transparent; padding: 8px; padding-top: 0px; padding-bottom: 0px;">
+
+                                            <%}else{%> - <% } %>
                                              </td>
                                          </tr>
                                      <% } %>

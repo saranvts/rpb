@@ -117,7 +117,7 @@ public class FundApprovalDaoImpl implements FundApprovalDao {
 	@Override
 	public Object[] findAttachmentByFundAndName(long fundApprovalId, String fileName) throws Exception {
 	    try {
-	        Query query = manager.createNativeQuery("SELECT FundApprovalAttachId, FundApprovalId, FileName, OriginalFileName FROM fund_approval_attach WHERE FundApprovalId=:fundApprovalId AND FileName=:fileName");
+	        Query query = manager.createNativeQuery("SELECT FundApprovalAttachId, FundApprovalId, FileName, OriginalFileName, Path FROM fund_approval_attach WHERE FundApprovalId=:fundApprovalId AND FileName=:fileName");
 	        query.setParameter("fundApprovalId", fundApprovalId);
 	        query.setParameter("fileName", fileName);
 	        return (Object[]) query.getSingleResult();

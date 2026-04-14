@@ -1123,7 +1123,7 @@ public class FundApprovalController
 				exisitingFundApproval.setJanuary(jan != null && !jan.trim().isEmpty() ? new BigDecimal(jan.trim()) : BigDecimal.ZERO);
 				exisitingFundApproval.setFebruary(feb != null && !feb.trim().isEmpty() ? new BigDecimal(feb.trim()) : BigDecimal.ZERO);
 				exisitingFundApproval.setMarch(mar != null && !mar.trim().isEmpty() ? new BigDecimal(mar.trim()) : BigDecimal.ZERO);
-				exisitingFundApproval.setStatus("N");
+				//exisitingFundApproval.setStatus("N");
 				exisitingFundApproval.setModifiedBy(UserName);
 				exisitingFundApproval.setModifiedDate(LocalDateTime.now());
 				exisitingFundApproval.setRemarks(exisitingFundApproval.getRemarks()!=null ? exisitingFundApproval.getRemarks().trim() : null);

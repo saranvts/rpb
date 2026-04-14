@@ -391,25 +391,24 @@ input[name="ItemNomenclature"]::placeholder {
 
             <!-- Approved Dropdown -->
            <div style="align-items: center;">
-			    <label for="REstimateType" style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;&nbsp;&nbsp;
-			
-			<span style="border: solid 0.1px;padding: 5px 9px;border-radius: 6px;border-color: darkgray;background-color: white;">
-			    <input type="radio" id="approvalStatus"
-			        <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="A" onchange="formSubmit()" />
-			    &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			
-			    <input type="radio" id="approvalStatus"
-			        <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="F" onchange="formSubmit()" />
-			    &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			    
-			    <input type="radio" id="approvalStatus"
-			        <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
-			        name="approvalStatus" value="NA" onchange="formSubmit()" title="Not Applicable" />
-			    &nbsp;<span style="font-weight: 600">Both</span>
-			    </span>
-			</div>
+               <label style="font-weight: bold; margin-left: 5px;">Approved:</label>&nbsp;&nbsp;&nbsp;&nbsp;
+               <span style="border: solid 0.1px;padding: 5px 9px;border-radius: 6px;border-color: darkgray;background-color: white;">
+                   <input type="radio" id="approvalStatusA"
+                       <% if(Existingstatus == null || "A".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                       name="approvalStatus" value="A" onchange="formSubmit(this)" />
+                   &nbsp;<span style="font-weight: 600">Yes</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                   <input type="radio" id="approvalStatusF"
+                       <% if("N".equalsIgnoreCase(Existingstatus) || "F".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                       name="approvalStatus" value="F" onchange="formSubmit(this)" />
+                   &nbsp;<span style="font-weight: 600">No</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                   <input type="radio" id="approvalStatusNA"
+                       <% if("NA".equalsIgnoreCase(Existingstatus)) { %> checked <% } %>
+                       name="approvalStatus" value="NA" onchange="formSubmit(this)" title="Not Applicable" />
+                   &nbsp;<span style="font-weight: 600">Both</span>
+               </span>
+           </div>
 
         </div>
 
@@ -630,6 +629,16 @@ input[name="ItemNomenclature"]::placeholder {
 	showFailureFlyMessage('<%=failure %>');
 
 <%}%>
+</script>
+
+<script>
+    function formSubmit(el) {
+        if (el && el.form) {
+            el.form.submit();
+        } else {
+            document.getElementById('RequistionForm').submit();
+        }
+    }
 </script>
 <script src="webresources/js/RpbFundStatus.js"></script>
 <script>
