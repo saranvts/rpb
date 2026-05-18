@@ -903,7 +903,7 @@ public class FundApprovalServiceImpl implements FundApprovalService
     private void copyAttachments(FundApproval fundRequest, FundRequestCOGDetails cogMonth, int index, String userName) throws Exception {
 
         // 1. Get the source attachments (You'll need the OLD FundApprovalId from cogMonth)
-        long oldFundApprovalId = parseLongSafe(cogMonth.getCarryForwardSerialNo(), index);
+        long oldFundApprovalId = parseLongSafe(cogMonth.getFundRequestId(), index);
         List<Object[]> attachments = fundApprovalDao.getFundRequestAttachList(oldFundApprovalId);
 
         if (attachments == null || attachments.isEmpty()) return;
