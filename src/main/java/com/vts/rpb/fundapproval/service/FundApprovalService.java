@@ -23,7 +23,7 @@ public interface FundApprovalService
 	
 	public long RevisionFundRequestSubmit(FundApproval approved, FundApprovalAttachDto attachDto) throws Exception;
 
-	public List<Object[]> getMasterFlowDetails(String fundRequestId) throws Exception;
+	public List<Object[]> getMasterFlowDetails(String fundRequestId, String masterFlowAction) throws Exception;
 	
 	public Object[] getFundRequestObj(long fundApprovalId) throws Exception;
 	
@@ -37,7 +37,7 @@ public interface FundApprovalService
 
 	public FundApproval getFundRequestDetails(String fundRequestId) throws Exception;
 
-	public List<Object[]> getFundPendingList(String empId,String finYear,String loginType,long formRole) throws Exception;
+	public List<Object[]> getFundPendingList(String empId,String finYear,String memberType) throws Exception;
 
 	public List<Object[]> getFundApprovedList(String empId, String finYear,String loginType) throws Exception;
 
@@ -53,7 +53,7 @@ public interface FundApprovalService
 	
 	public List<Object[]> getBudgetHeadItem(long ProjectId, long budgetHeadId) throws Exception;
 	
-	public String getCommitteeMemberCurrentStatus(String empId) throws Exception;
+	public String getCommitteeMemberCurrentStatus(Long empId) throws Exception;
 
 	public List<Object[]> getFundRequestCarryForwardDetails(FundApprovalBackButtonDto fundApprovalDto,String labCode,String action) throws Exception;
 	
@@ -88,4 +88,8 @@ public interface FundApprovalService
 	public List<Object[]> getFundApprovalQueryDetails(String fundApprovalId) throws Exception;
 	
 	public List<Object[]> getFundApprovalRevisionDetails(String fundApprovalId) throws Exception;
+
+	public List<Object[]> getPreviousYearFundDetailsList(String previousFinYear, String finYear, String loginType, String memberType, String empId) throws Exception;
+
+	public long transferFundDetails(String[] fundApprovalIds, String finYear, String estimateType, String userName) throws Exception;
 }

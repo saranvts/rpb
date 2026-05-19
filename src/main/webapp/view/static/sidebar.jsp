@@ -279,55 +279,47 @@ hr {
 
  <div class="wrapper">
   
-          <!-- Sidebar  -->
-   
-<div id="sidebar"><!-- style="display: none;" -->
+<div id="sidebar">
 <div class="nav flex-column nav-pills nav-pills-custom sidebar-container" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="margin-top: -0.3rem;width: 15.5rem;border-radius: 6px;background-color: rgb(246 250 255);box-shadow: 5px 5px 5px #cecece;">
   <div id="sidebarmodule">
+  
   <ol id="mainModuleList" style="margin-left: -3rem;">
   
-    <!-- Populate main module list with items -->
-    <% for (Object[] mainModule : MainModuleList) { %>
-    <% if(applicationType!=null && applicationType.equalsIgnoreCase("F") && mainModule[1]!=null && (mainModule[1].toString()).equalsIgnoreCase("Fund Approval")){%>
-    
-      <li id="MainModuleId" value="<%= mainModule[0] %>" class='nav-link mb-2 shadow custom_width hovercolor dropdown-toggle' onclick="toggleSubmoduleList('<%= mainModule[0] %>')"><span class="<%=mainModule[2]%>">&nbsp;&nbsp;</span><%= mainModule[1]%></li>
-      <ul class="list-unstyled menu-elements" id="submodule-list-<%= mainModule[0]%>">
-        <!-- Populate submodule list with items for the current main module -->
-        <div class="sidebar-content">
-        <% for (Object[] subModule : SubModuleList) {
-               if (subModule[0].equals(mainModule[0])) {%>
-          <li class="" style="margin-left:-0.3rem"><a class="dropdown-item hovercolorsub" style='width: 105%;margin-bottom: 7px !important;border-radius: 3px;margin-top:0.1rem;padding:3px;margin:4px' role='button' aria-controls='otherSections' class="text-nowrap bi-list" href='<%=subModule[1]%>'><i id="my-icon" class='fas fa-arrow-right' style="font-size: 11px;font-weight:800"></i>&nbsp;&nbsp;<span style="font-weight:700;color:#0303b9;font-size: 15px;"><%=subModule[2] %></span></a></li>
-        <%    } temp=Integer.parseInt(subModule[0].toString());
-             } %>
-             </div>
-      </ul>
-      <hr>
-      
-      <%}else if(applicationType!=null && applicationType.equalsIgnoreCase("I")){ %>
-      
-       <li id="MainModuleId" value="<%= mainModule[0] %>" class='nav-link mb-2 shadow custom_width hovercolor dropdown-toggle' onclick="toggleSubmoduleList('<%= mainModule[0] %>')"><span class="<%=mainModule[2]%>">&nbsp;&nbsp;</span><%= mainModule[1]%></li>
-      <ul class="list-unstyled menu-elements" id="submodule-list-<%= mainModule[0]%>">
-        <!-- Populate submodule list with items for the current main module -->
-        <div class="sidebar-content">
-        <% for (Object[] subModule : SubModuleList) {
-               if (subModule[0].equals(mainModule[0])) {%>
-          <li class="" style="margin-left:-0.3rem"><a class="dropdown-item hovercolorsub" style='width: 105%;margin-bottom: 7px !important;border-radius: 3px;margin-top:0.1rem;padding:3px;margin:4px' role='button' aria-controls='otherSections' class="text-nowrap bi-list" href='<%=subModule[1]%>'><i id="my-icon" class='fas fa-arrow-right' style="font-size: 11px;font-weight:800"></i>&nbsp;&nbsp;<span style="font-weight:700;color:#0303b9;font-size: 15px;"><%=subModule[2] %></span></a></li>
-        <%    } temp=Integer.parseInt(subModule[0].toString());
-             } %>
-             </div>
-      </ul>
-      <hr>
-      
-      
-      
-    <% }} %>
+	  <li class="nav-item active" style=" margin: 2px 4px;">
+		<a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" role="button" aria-controls="otherSections" href="CommitteMaster.htm">
+			<i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+			&nbsp;<span style="font-weight: 700; color: white; font-size: 15px;">Committee Master</span>
+		</a>
+	  </li>
+	  
+	  <li class="nav-item active" style=" margin: 2px 4px;">
+		<a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" href="FundRequest.htm">
+			<i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+			&nbsp;<span style="font-weight: 700; color: white; font-size: 15px;">Fund Request</span>
+		</a>
+	  </li>
+	  
+	  <li class="nav-item active" style=" margin: 2px 4px;">
+		<a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" href="FundApprovalList.htm">
+			<i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+			&nbsp;<span style="font-weight: 700; color: white; font-size: 15px;">Fund Approval</span>
+		</a>
+	  </li>
+	  
+	  <li class="nav-item active" style=" margin: 2px 4px;">
+		<a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" href="FundReport.htm">
+			<i class="fas fa-caret-right" style="font-size: 12px; font-weight: 800; color:#ed7979;"></i>
+			&nbsp;<span style="font-weight: 700; color: white; font-size: 15px;">Fund Report</span>
+		</a>
+	  </li>
+	  
+	  
   </ol>
+  
   </div>
   </div>
 </div>
-          <!-- Page Content  -->
-         <div id="content"> 
-   
+</div>
 
 <script>
   window.addEventListener('load', function() {

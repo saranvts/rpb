@@ -304,7 +304,7 @@ padding : 7px;
 		%>
 		
 								     <div style="flex: 1; text-align: center;background-color: #ffffff;margin-left: 24%; margin-right: 22%;padding: 8px;">
- <span style="font-weight: 600;color:#6a1616;">Division : </span><span style="font-weight: 600;color:#19a2af;">&nbsp;<%= DivName %> <%= !DivCode.toString().isEmpty() ? "(" + DivCode + ")" : "" %></span>
+ <% if(DivName!=null && DivName!=""){ %><span style="font-weight: 600;color:#6a1616;">Division : </span><span style="font-weight: 600;color:#19a2af;">&nbsp;<%= DivName %> <%= !DivCode.toString().isEmpty() ? "(" + DivCode + ")" : "" %></span><%} %>
  &nbsp;&nbsp;&nbsp;
 <%if(ProposedProject!=null && !ProposedProject.equalsIgnoreCase("")) {%>
   <span style="font-weight: 600;color:#6a1616;">Proposed Project : </span>

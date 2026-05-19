@@ -1,26 +1,24 @@
 package com.vts.rpb.fundapproval.modal;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
-@Entity(name = "fund_approval_attach")
-public class FundApprovalAttach {
+@Entity(name = "fund_approval_attach_revision")
+public class FundApprovalAttachRev {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "FundApprovalAttachRevId")
+	private long fundApprovalAttachRevId;
+	
 	@Column(name = "FundApprovalAttachId")
-	private long FundApprovalAttachId;
+	private long fundApprovalAttachId;
 	
 	@Column(name = "FundApprovalId")
 	private long fundApprovalId;
-	
+
 	@Column(name = "Path", length = 255)
 	private String Path;
 	
@@ -37,11 +35,5 @@ public class FundApprovalAttach {
 	private String CreatedBy;
 	
 	@Column(name = "CreatedDate")
-	private LocalDateTime CreatedDate; 
-	
-	@Column(name = "ModifiedBy", length = 100)
-	private String ModifiedBy;
-	
-	@Column(name = "ModifiedDate")
-	private LocalDateTime ModifiedDate;
+	private LocalDateTime CreatedDate;
 }

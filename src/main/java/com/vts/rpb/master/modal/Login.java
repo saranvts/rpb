@@ -36,6 +36,9 @@ public class Login {
 	@Column(name = "LoginType", length = 1)
     private String loginType;
 	
+	@Column(name = "RpbLoginType", length = 1)
+	private String rpbLoginType;
+	
 	@Column(name = "Ibas", length = 1)
     private String ibas;
 	

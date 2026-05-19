@@ -577,11 +577,8 @@ List<Object[]> employeeList=(List<Object[]>)request.getAttribute("AllEmployeeDet
 
 
 long empId = (Long) session.getAttribute("EmployeeId");
-String currentEmpStatus=(String)request.getAttribute("employeeCurrentStatus");
+String particularMemberType = (String)request.getAttribute("particularMemberType");
 FundApprovalBackButtonDto dto = (FundApprovalBackButtonDto) session.getAttribute("FundApprovalAttributes");
-if(currentEmpStatus == null){
-	currentEmpStatus = "NA";
-}
 
 String fundApprovalId=null;
 String estimateType=null;
@@ -648,9 +645,9 @@ if(fundDetails!=null && fundDetails.length > 0)
 	    	 <ol class="breadcrumb" style="justify-content: right !important;">
 	    	 <li class="breadcrumb-item"><a href="FundRequest.htm"><i class=" fa-solid fa-house-chimney fa-sm"></i>Requisition List </a></li>
 	    	 <li class="breadcrumb-item">
-	         	<a	href="FundApprovalList.htm"> <% if(currentEmpStatus.equalsIgnoreCase("CC")){ %> Approval 
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH")){ %> Recommend
-									         <%}else if(currentEmpStatus.equalsIgnoreCase("CS")){ %> Noting
+	         	<a	href="FundApprovalList.htm"> <% if(particularMemberType.equalsIgnoreCase("CC")){ %> Approval
+									         <%}else if(particularMemberType.equalsIgnoreCase("CM") || particularMemberType.equalsIgnoreCase("DH")){ %> Recommend
+									         <%}else if(particularMemberType.equalsIgnoreCase("CS")){ %> Noting
 									         <%}else{ %> NA <%} %> List</a>
 	         </li>
 	         <li class="breadcrumb-item active" aria-current="page"><%if(estimateType!=null && estimateType.equalsIgnoreCase("F")){ %> FBE <%}else if(estimateType!=null && estimateType.equalsIgnoreCase("R")){ %> RE <%} %> Item</li>
@@ -661,7 +658,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 
   <%String success=(String)request.getParameter("resultSuccess"); 
    String failure=(String)request.getParameter("resultFailure");%>  
-
+   
 <div class="page card dashboard-card" style="background-color:white;padding-top: 0px;padding-left: 0px;padding-right: 0px;width: 98%;margin: auto;margin-top: 8px;">		
 
 <div class="container">
@@ -730,22 +727,31 @@ if(fundDetails!=null && fundDetails.length > 0)
 
 					    <%if(masterFlowDetails != null){ %>
 
-						    <% for(Object[] masterList : masterFlowDetails){ 
+						    <% for(Object[] masterList : masterFlowDetails){
 						    
 						    boolean isCurrentEmp = masterList[3] != null && empId == (Long.parseLong(masterList[3].toString()));
+						    boolean divHilighter = isCurrentEmp && (
+						                                         (particularMemberType.equalsIgnoreCase("DH") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("DH")) ||
+						                                         (particularMemberType.equalsIgnoreCase("CM") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("CM")) ||
+						                                         (particularMemberType.equalsIgnoreCase("CM") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("SE")) ||
+						                                         (particularMemberType.equalsIgnoreCase("CS") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("CS")) ||
+						                                         (particularMemberType.equalsIgnoreCase("CC") && masterList[1] != null && (masterList[1].toString()).equalsIgnoreCase("CC"))
+						                                      );
+
+						    boolean isTempDH = !particularMemberType.equalsIgnoreCase("DH");
 						    boolean isApproved = masterList[4] != null && (masterList[4].toString().equalsIgnoreCase("Y"));
 						    String isSkippedStatus = masterList[12]!=null ? masterList[12].toString() : "N";
 						    %>
 
-						    	<tr <%if(isCurrentEmp){ %> class="highlight-box" <%} %>>
+						    	<tr <%if(divHilighter){ %> class="highlight-box" <%} %>>
 					            <td style="width:40%;"><b><%=masterList[2] %>&nbsp;<%if(isSkippedStatus.equalsIgnoreCase("Y")){ %><span>Skipped</span> <%} %></b>
 					            <% if(masterList[8] != null){ %> <br> <span class="remarksDetails">Remarks</span> <%} %>
 					            </td>
 					            <td style="width:60%;" class="recommendation-value">
-					                <span <%if(isCurrentEmp){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
+					                <span <%if(divHilighter){ %> style="color:#dd5e01;" <%}else{ %> style="color:#420e68;" <%} %>>
 					                </span>
 					                <%=masterList[6]!=null ? masterList[6] : "-" %><%= masterList[7] != null ? ", "+masterList[7] : "" %>
-					                <%if(isCurrentEmp){ %>
+					                <%if(divHilighter){ %>
 					                    <%if(!isApproved){ %><span class="badge badge-info"><%=masterList[9] != null ? masterList[9] : "" %></span><%} %>
 					                <%} %>
 					                
@@ -780,10 +786,7 @@ if(fundDetails!=null && fundDetails.length > 0)
                     
                     <%String[] linkedMembers = linkedMemberIdsStr.split(",");
                     String[] empIds = empIdsStr.split(",");
-                    
-                    System.out.println("linkedMembers---"+Arrays.toString(linkedMembers));
-                    System.out.println("empIds---"+Arrays.toString(empIds));
-                    System.out.println("empId---"+empId);
+
                     
                     String linkedMemberId = IntStream.range(0, linkedMembers.length)
                     	    .filter(i -> empIds[i]!=null && Long.parseLong((empIds[i].toString())) == (empId)).mapToObj(i -> linkedMembers[i]).findFirst().orElse(null);
@@ -812,27 +815,17 @@ if(fundDetails!=null && fundDetails.length > 0)
 
                             rcApprovalDetails = filtered.stream() .map(a -> a[1]).collect(Collectors.collectingAndThen( Collectors.joining(","), s -> s.isEmpty() ? "NA" : s));
                             
-                            System.out.println("rcApprovalDetails---BEFORE---"+rcApprovalDetails);
-                            
                             dhStatus = dhDetails.equalsIgnoreCase("N");
                             csStatus = csDetails.equalsIgnoreCase("N");
                             rcStatus = rcApprovalDetails!=null && rcApprovalDetails.equalsIgnoreCase("NA") ? true : rcApprovalDetails.contains("N");
                             
-                            System.out.println("-----------itemNomenclature----------"+itemNomenclature);
-                            System.out.println("dhDetails------"+dhDetails);
-                            System.out.println("rcApprovalDetails---After---"+rcApprovalDetails);
-                            System.out.println("approvalsStr------"+approvalsStr);
-                            System.out.println("rolesStr------"+rolesStr);
-                            System.out.println("dhStatus------"+dhStatus);
-                            System.out.println("csStatus------"+csStatus);
-                            System.out.println("rcStatus------"+rcStatus);
                        }
                        %>
 
 						<%boolean showPending = false;
 
 						
-						switch(currentEmpStatus.toUpperCase()) {
+						switch(particularMemberType.toUpperCase()) {
 						    case "CS":
 						        showPending = (dhStatus || (rcApprovalDetails.equalsIgnoreCase("NA") ? false : rcStatus));
 
@@ -844,8 +837,6 @@ if(fundDetails!=null && fundDetails.length > 0)
 						}
 						%>
 						
-						<%System.out.println("showPending------"+showPending); %>
-
 						<%if(!showPending){ %>
 
                         <div class="inner-box">
@@ -863,25 +854,26 @@ if(fundDetails!=null && fundDetails.length > 0)
 				    			    <input type="hidden" id="EmpId" name="EmpId" value="<%=empId%>"/>
 									<input type="hidden" id="csrfParam" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 									    <input type="hidden" name="fundApprovalId" value="<%=fundApprovalId%>">
+									    <input type="hidden" name="particularMemberType" value="<%=particularMemberType %>">
 									    <input type="hidden" name="MemberLinkedId" value="<%=linkedMemberId%>">
 									    <input type="hidden" name="initiating_officer" <%if(initiatingOfficerId != null){ %> value="<%=initiatingOfficerId%>" <%} %>>
 									
 											<% // A - Approver, RE - Recommender, DA - Division Head Approver %>
 											
-											<% if(currentEmpStatus.equalsIgnoreCase("DH") || currentEmpStatus.equalsIgnoreCase("CS")){ %>
-									    		<button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container" onclick="EditRecommendingDetailsAction('O')">Edit</button>
+											<% if(particularMemberType.equalsIgnoreCase("DH") || particularMemberType.equalsIgnoreCase("CS")){ %>
+									    		<button type="button" data-tooltip="Change Recommending Officer(s)" data-position="top"  class="btn btn-sm revise-btn tooltip-container" onclick="EditRecommendingDetailsAction('O')">Committee Members Edit</button>
 									    	&nbsp;<%} %>
 									    	
 									    	 <% String actionName = "", action= "A";
-									        if (currentEmpStatus.equalsIgnoreCase("CC")) 
+									        if (particularMemberType.equalsIgnoreCase("CC"))
 									        {
 									        	actionName = "Approve";
 									        }
-									        else if(currentEmpStatus.equalsIgnoreCase("CM") || currentEmpStatus.equalsIgnoreCase("DH"))
+									        else if(particularMemberType.equalsIgnoreCase("CM") || particularMemberType.equalsIgnoreCase("DH"))
 									        {
 									        	actionName = "Recommend";
 									        }
-									        else if(currentEmpStatus.equalsIgnoreCase("CS"))
+									        else if(particularMemberType.equalsIgnoreCase("CS"))
 									        {
 									        	actionName = "Noting";
 									        }
@@ -891,12 +883,12 @@ if(fundDetails!=null && fundDetails.length > 0)
 									        }
 									        %>
 									    
-									        <button type="button" class="btn btn-primary btn-sm submit" onclick="confirmActionFromMember('<%=actionName %>','<%=currentEmpStatus %>','<%=action %>')">
+									        <button type="button" class="btn btn-primary btn-sm submit" onclick="confirmActionFromMember('<%=actionName %>','<%=particularMemberType %>','<%=action %>')">
 									        <%=actionName %>
 									        </button> &nbsp;
 									    
-									    <% if(currentEmpStatus.equalsIgnoreCase("CS") || currentEmpStatus.equalsIgnoreCase("CC") || currentEmpStatus.equalsIgnoreCase("SC")){ %>
-										    <button type="button" class="btn btn-sm btn-danger" onclick="confirmActionFromMember('Return','<%=currentEmpStatus %>','R')">
+									    <% if(particularMemberType.equalsIgnoreCase("CS") || particularMemberType.equalsIgnoreCase("CC") || particularMemberType.equalsIgnoreCase("SC")){ %>
+										    <button type="button" class="btn btn-sm btn-danger" onclick="confirmActionFromMember('Return','<%=particularMemberType %>','R')">
 											        Return
 											</button>  &nbsp;
 										<%} %>
@@ -914,7 +906,8 @@ if(fundDetails!=null && fundDetails.length > 0)
 	                               
 								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 								<input type="hidden" name="fundApprovalIdEdit" value="<%=fundApprovalId %>"/>
-                              	
+								<input type="hidden" name="particularMemberTypeEdit" value="<%=particularMemberType %>"/>
+
                               	<table style="width: 100%;" id="fundApprovalForardTable">
                               	
                               		<%long isCMorSEApproved = masterFlowDetails.stream()
@@ -944,7 +937,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    boolean isCurrentEmp = masterFlowList[3] != null && empId == (Long.parseLong(masterFlowList[3].toString()));
 									    boolean isApproved = masterFlowList[4] != null && (masterFlowList[4].toString().equalsIgnoreCase("Y"));
 									    String masterMemberType = masterFlowList[2]!=null ? masterFlowList[1].toString() : "NA";
-									    boolean mainAuthority = (masterMemberType.equalsIgnoreCase("CS") || (masterMemberType.equalsIgnoreCase("CC") && !currentEmpStatus.equalsIgnoreCase("CS") ));
+									    boolean mainAuthority = (masterMemberType.equalsIgnoreCase("CS") || (masterMemberType.equalsIgnoreCase("CC") && !particularMemberType.equalsIgnoreCase("CS") ));
 									    String rcEmpId = masterFlowList[3] != null ? masterFlowList[3].toString() : "0";
 									    boolean isMemberTypeCMorSE = masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE");
 									    String isSkippedStatus = masterFlowList[12]!=null ? masterFlowList[12].toString() : "N";
@@ -959,13 +952,6 @@ if(fundDetails!=null && fundDetails.length > 0)
 								            <td class="recommendation-value editRCDropDown">
 								            
 								            <div class="form-inline">
-								            
-								            <% 
-								            System.out.println("isMemberTypeCMorSE-----"+isMemberTypeCMorSE);
-								            System.out.println("isCMorSEApproved-----"+isCMorSEApproved);
-								            System.out.println("isDHApproved-----"+isDHApproved);
-								            System.out.println("isApproved--#######################---"+isDHApproved);
-								            %>
 								            
 								            <%if(isMemberTypeCMorSE && isCMorSEApproved > 0 && isDHApproved > 0){ %>
 								            
@@ -1055,7 +1041,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 				                              			
 				                              			</div>
 									            
-		                              			<%}else{ %>
+		                              			<% }else{ %>
 		                              			
 		                              			<%if(isMemberTypeCMorSE){%>
 		                              			<input type="hidden" name="SkipReccEmpStatus" value="N">
@@ -1114,7 +1100,8 @@ if(fundDetails!=null && fundDetails.length > 0)
 	                               
 								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 								<input type="hidden" name="fundApprovalIdEdit" value="<%=fundApprovalId %>"/>
-                              	
+								<input type="hidden" name="particularMemberTypeEdit" value="<%=particularMemberType %>"/>
+
                               	<table style="width: 100%;" id="fundApprovalForardTable">
                               	
                               	<%long isCMorSEApproved = masterFlowDetails.stream()
@@ -1143,7 +1130,7 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    boolean isCurrentEmp = masterFlowList[3] != null && empId == (Long.parseLong(masterFlowList[3].toString()));
 									    boolean isApproved = masterFlowList[4] != null && (masterFlowList[4].toString().equalsIgnoreCase("Y"));
 									    String masterMemberType = masterFlowList[2]!=null ? masterFlowList[1].toString() : "NA";
-									    boolean mainAuthority = (masterMemberType.equalsIgnoreCase("CS") || (masterMemberType.equalsIgnoreCase("CC") && !currentEmpStatus.equalsIgnoreCase("CS") ));
+									    boolean mainAuthority = (masterMemberType.equalsIgnoreCase("CS") || (masterMemberType.equalsIgnoreCase("CC") && !particularMemberType.equalsIgnoreCase("CS") ));
 									    String rcEmpId = masterFlowList[3] != null ? masterFlowList[3].toString() : "0";
 									    boolean isMemberTypeCMorSE = masterMemberType.equalsIgnoreCase("CM") || masterMemberType.equalsIgnoreCase("SE");
 									    String isSkippedStatus = masterFlowList[12]!=null ? masterFlowList[12].toString() : "N";
@@ -1151,11 +1138,6 @@ if(fundDetails!=null && fundDetails.length > 0)
 									    boolean committeeAction = true;
 									    %>
 									    
-									    <%
-									    System.out.println("reasonType****"+reasonType);
-									    System.out.println("isApproved--#######################---"+isApproved);
-									    %>
-
 									    	<tr>
 									    	<td class="editRCDetails"><%=masterFlowList[2] %>
 									    	<input type="hidden" name="MemberLinkedIdEdit" value="<%=masterFlowList[5] %>"/>
@@ -1342,7 +1324,7 @@ function displayReasonDropDown(memberLinkedId, dropDownIdAttribute)
 
 function updateReccDetailsFunction()
 {
-	var rcMembers = $("select[name='EditReccEmpId'], input[name='EditReccEmpId']").map(function() {
+	var rcMembers = $("select[name='EditReccEmpId']").map(function() {
 	        return $(this).val();  
 	    }).get(); 
 	
@@ -1370,6 +1352,7 @@ function updateReccDetailsFunction()
 		    showConfirm('Are You Sure To Update The Recommending Officer(s)..?',
 		        function (confirmResponse) {
 		            if (confirmResponse) {
+		            	$("select[name='ReasonType']:disabled").prop("disabled", false);
 		            	form.attr("action","EditCommitteeMemberDetails.htm");
 		                form.submit();
 		            }
@@ -1397,15 +1380,20 @@ function EditRecommendingDetailsAction(actionType)
 
 <script type="text/javascript">
 
-<%if(success!=null){%>
+$(document).ready(function(){
+	
+	<%if(success!=null){%>
 
-	showSuccessFlyMessage('<%=success %>');
+		showSuccessFlyMessage('<%=success %>');
 
-<%}else if(failure!=null){%>
+	<%}else if(failure!=null){%>
 
-	showFailureFlyMessage('<%=failure %>');
+		showFailureFlyMessage('<%=failure %>');
 
-<%}%>
+	<%}%>
+	
+});
+
 </script>
 
 <script>
@@ -1435,16 +1423,6 @@ function confirmActionFromMember(actionName, memberType, action) {  // A - Appro
     	}
    	}
     
-  /*    if (confirm("Are you sure to "+action+"...?")) {
-        const form = $('#fbeForm');
-        const actionInput = $('<input>', {
-            type: 'hidden',
-            name: 'Action',
-            value: value
-        });
-        form.append(actionInput);
-        form.submit();
-    } */
 }
 </script>
 
@@ -1455,12 +1433,12 @@ $(document).ready(function(){
 	getAttachementDetailsInline('<%=fundApprovalId %>');
 });
 
-window.onload = function () {
+/* window.onload = function () {
     if (!sessionStorage.getItem("msgShown")) {
         showSuccessFlyMessage("Recommending Officer(s) Updated Successfully..&#128077;");
         sessionStorage.setItem("msgShown", "true");
     }
-};
+}; */
 
 </script>
 </html>

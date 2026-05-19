@@ -1,6 +1,5 @@
 package com.vts.rpb.authenticate;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class LoginController {
 	
 	private static final Logger logger=LogManager.getLogger(AuthenticationController.class);
 	
-	   @RequestMapping(value = {"MainDashBoard.htm"}, method = RequestMethod.GET)
+	   @RequestMapping(value = {"MainDashBoard.htm"})
 	   public String dashBoardPage(HttpServletRequest req,HttpSession ses) throws Exception 
 	   {	
 		   String labCode = (ses.getAttribute("client_name")).toString();
@@ -87,9 +86,9 @@ public class LoginController {
 			}
 		    
 		    List<Object[]> DivisionList=masterService.getDivisionList(labCode,empId,loginType,memberType);
-			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId,memberType,loginType);
+			List<Object[]> DivisionDetailsList=loginService.getDivisionDetailsList(RupeeValue,FinYear,divisionId,memberType,loginType, empId, labCode);
 			
-			String memberLoginType=fundApprovalService.getCommitteeMemberCurrentStatus(String.valueOf(empId));
+			String memberLoginType=fundApprovalService.getCommitteeMemberCurrentStatus(Long.parseLong(empId));
 			ses.setAttribute("memberLoginType", memberLoginType);
 		   req.setAttribute("DivisionList", DivisionList);
 		   req.setAttribute("DivisionDetailsList", DivisionDetailsList);

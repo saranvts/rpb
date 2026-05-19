@@ -25,12 +25,12 @@ public class AuthenticationController
 	@Value("${passwordChange}")
 	String passwordChange;
 	
-	   @RequestMapping(value = {"/"}, method = RequestMethod.GET)
+	   @RequestMapping(value = {"/", "/login"}, method = RequestMethod.GET)
 	    public String rpbFundApproval(HttpServletRequest req,HttpSession ses) throws Exception 
 	    {
-	    	return "redirect:/RpbFundApprovalAuthenticate";
+	    	return "redirect:/oauth2/authorization/custom";
 	    }
-	   
+
 	   @RequestMapping(value = "getModuleId.htm", method = RequestMethod.GET)
 		public @ResponseBody void getModuleId(HttpServletRequest req, HttpSession ses) throws Exception {
 			
@@ -40,26 +40,6 @@ public class AuthenticationController
 			}
 			else {
 				ses.setAttribute("MainModuleId", "0");
-			}
-		}
-
-		/*******************************************Developer Tools Settings*********************************************************/
-		@RequestMapping(value = "UpdateDeveloperToolsStatus.htm")
-		public @ResponseBody String UpdateDeveloperToolsStatus(HttpServletRequest req, HttpSession ses) throws Exception {
-			String status = req.getParameter("status");
-			Gson json = new Gson();
-			try {
-				long parseStatus=0;
-					if(status!=null && !status.equalsIgnoreCase("null"))
-					{
-						ses.setAttribute("DeveloperToolsStatus", status);
-						parseStatus=Long.parseLong(status);
-					}
-				return json.toJson(parseStatus);	
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return null;
 			}
 		}
 		
