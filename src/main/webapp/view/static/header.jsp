@@ -956,7 +956,8 @@ function rupeeFormat(amount) {
 </div>
          
 	<% String Username = (String)session.getAttribute("Username");
-       String logintype = (String)session.getAttribute("LoginType"); 
+       String logintype = (String)session.getAttribute("LoginType");
+       System.out.println("logintype*****"+logintype);
        String EmpName = (String)session.getAttribute("EmployeeName");
        String EmployeeDesign = (String)session.getAttribute("EmployeeDesign");
        long FormRole = (long)session.getAttribute("FormRole");
@@ -1014,7 +1015,7 @@ function rupeeFormat(amount) {
 			<ul class="navbar-nav ml-auto"> 						
 
 				 <% if(logintype != null){ %>
-                     <% if(logintype.equalsIgnoreCase("A")){ %>
+                     <% if(logintype.equalsIgnoreCase("A") || logintype.equalsIgnoreCase("D")){ %>
 
                         <li class="nav-item active" style=" margin: 2px 4px;">
                             <a class="dropdown-item subModule  hovercolorsub btn btn-sm" style="width: 95%;margin: 2px 4px;border-radius: 3px;margin-top: 0.1rem;padding-left: 13px;padding-right: 13px;" role="button" aria-controls="otherSections" href="CommitteMaster.htm">

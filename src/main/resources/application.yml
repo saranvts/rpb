@@ -27,6 +27,7 @@ spring:
       prefix: /view/
       suffix: .jsp
 
+
 #logging:
 #  level:
 #    org.springframework.security: DEBUG

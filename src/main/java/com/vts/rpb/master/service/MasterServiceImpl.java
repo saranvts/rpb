@@ -1,9 +1,11 @@
 package com.vts.rpb.master.service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,8 @@ public class MasterServiceImpl implements MasterService
 
 	@Override
 	public List<Object[]> getDivisionList(String labCode, String empId, String loginType,String committeeMember) throws Exception {
+		List<Object[]> list = masterDao.getDivisionList(labCode,empId,loginType,committeeMember);
+		list.forEach(row-> System.out.println("row->"+ Arrays.toString(row)));
 		return masterDao.getDivisionList(labCode,empId,loginType,committeeMember);
 	}
 	

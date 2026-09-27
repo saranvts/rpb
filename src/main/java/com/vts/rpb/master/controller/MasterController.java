@@ -73,7 +73,6 @@ public class MasterController
 	   		try
 	   		{
 	   			String todayDate=DateTimeFormatUtil.getTodayDateInRegularFormat();
-	   			System.err.println("Todat date->"+todayDate);
 	   			req.setAttribute("CommitteMaster", masterService.CommitteeMasterList());
 	   			req.setAttribute("todayDate", todayDate);
 	   			
